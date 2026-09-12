@@ -4,7 +4,7 @@
 # -------------------------------------------
 
 # --- Core HTTP ---
-requests>=2.32.0
+requests>=2.34.2
 urllib3>=2.2.0
 
 # --- Configuration ---
