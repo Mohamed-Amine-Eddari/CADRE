@@ -179,7 +179,7 @@ winlogbeat.event_logs:
 output.elasticsearch:
   hosts: ["192.168.56.1:9200"]
   username: "elastic"
-  password: "VOTRE_MOT_DE_PASSE_ELASTIC"
+  password: "VOTRE_MOT_DE_PASSE_ELASTIC"  # pragma: allowlist secret
 
 setup.kibana:
   host: "192.168.56.1:5601"
