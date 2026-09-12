@@ -1,0 +1,24 @@
+title: Copie de fichier système local (Data from Local System)
+id: 62efeab9-498a-493e-ae66-b568577f8ab9
+status: experimental
+description: |
+  Copie un fichier système bénin vers un répertoire temporaire puis le supprime — simule une étape de collecte avant exfiltration.
+references:
+  - https://attack.mitre.org/techniques/T1005/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.collection
+  - attack.t1005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'CADRE_collected.txt'
+  condition: selection
+falsepositives:
+  - Scripts de sauvegarde
+  - Outils de diagnostic réseau
+level: low

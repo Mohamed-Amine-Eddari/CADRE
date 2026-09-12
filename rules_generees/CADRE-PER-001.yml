@@ -1,0 +1,24 @@
+title: Création de compte utilisateur (Persistence)
+id: 44511b11-3dc4-4d2e-bdb0-3a58f5ae9cc4
+status: experimental
+description: |
+  Crée un compte utilisateur local pour simuler une persistance. Le compte est supprimé immédiatement après la collecte.
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.persistence
+  - attack.t1136_001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4720
+  condition: selection
+falsepositives:
+  - Provisioning automatisé (HR, GPO)
+  - Création admin légitime
+  - MDM enrollment
+level: medium

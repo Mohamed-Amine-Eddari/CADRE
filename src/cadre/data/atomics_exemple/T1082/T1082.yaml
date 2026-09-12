@@ -1,0 +1,26 @@
+attack_technique: T1082
+display_name: System Information Discovery
+atomic_tests:
+  - name: System Information Discovery (systeminfo)
+    auto_generated_guid: 3a1b7d90-0000-4d00-9c00-cadre000si01
+    description: |
+      Collecte les informations système via systeminfo — reconnaissance
+      bénigne classique en début d'intrusion.
+    supported_platforms:
+      - windows
+    executor:
+      command: |
+        systeminfo
+      name: command_prompt
+      elevation_required: false
+  - name: macOS system_profiler (hors cible CADRE)
+    auto_generated_guid: 3a1b7d90-0000-4d00-9c00-cadre000si02
+    description: |
+      Variante macOS — doit être IGNORÉE (plateforme non ciblée par CADRE).
+    supported_platforms:
+      - macos
+    executor:
+      command: |
+        system_profiler SPSoftwareDataType
+      name: sh
+      elevation_required: false

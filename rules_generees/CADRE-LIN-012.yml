@@ -1,0 +1,23 @@
+title: Software Discovery (dpkg)
+id: 93ad2f7d-f1ba-49a6-a84a-b69f18b98b3b
+status: experimental
+description: |
+  Énumère les paquets installés via dpkg.
+references:
+  - https://attack.mitre.org/techniques/T1518/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1518
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'dpkg -l'
+  condition: selection
+falsepositives:
+  - Inventaire logiciel
+  - Gestion de parc
+level: low

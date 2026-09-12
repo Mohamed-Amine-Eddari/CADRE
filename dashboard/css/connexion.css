@@ -1,0 +1,117 @@
+/* ==========================================================================
+   connexion.css — page de connexion CADRE
+   --------------------------------------------------------------------------
+   Remplace la popup Basic Auth générique du navigateur par une page sous
+   contrôle CADRE. Ne redéfinit que la mise en page propre à cette page ;
+   couleurs/espacements/typo descendent de tokens.css, .champ/.btn de
+   composants.css — même système visuel que le reste du dashboard.
+   ========================================================================== */
+
+/* Détection de l'autocomplétion navigateur sur le champ mot de passe --
+   technique standard (CSS `:-webkit-autofill` + `animationstart` en JS,
+   connexion.js) : Chromium/Edge appliquent ce pseudo-sélecteur au moment
+   exact où ils injectent une valeur mémorisée, avant toute frappe utilisateur
+   possible. Sans ce filet, `autofocus` déclenche l'événement `focus` AVANT
+   l'autofill (constaté en test réel), rendant tout nettoyage basé sur
+   `focus` inefficace -- l'utilisateur tape alors par-dessus une valeur
+   invisible déjà présente, obtenant un mot de passe corrompu (concaténé) qui
+   échoue même s'il a tapé la bonne valeur. L'animation elle-même est
+   invisible (durée quasi nulle) ; elle ne sert qu'à générer un événement
+   détectable en JS.
+   */
+@keyframes cadre-detection-autofill {
+  from {
+  }
+  to {
+  }
+}
+.connexion-carte .champ:-webkit-autofill {
+  animation-name: cadre-detection-autofill;
+  animation-duration: 0.001s;
+}
+
+.connexion-corps {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.connexion-scene {
+  width: 100%;
+  max-width: 380px;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.connexion-carte {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-6);
+  /* --surface (noir pur, #000000) -- même valeur que l'en-tête réel du
+     dashboard (.entete-collante, composants.css) pour un fondu invisible
+     avec la carte. */
+  background: var(--surface);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+}
+
+.connexion-titre {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.connexion-soustitre {
+  margin: 0 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.connexion-etiquette {
+  align-self: flex-start;
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.connexion-carte .champ {
+  margin-bottom: var(--sp-2);
+}
+
+.connexion-bouton {
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+
+.connexion-erreur {
+  width: 100%;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--st-angle);
+  background: var(--st-angle-bg);
+  border: var(--bw) solid var(--st-angle);
+  border-radius: var(--r);
+}
+
+.connexion-pied {
+  max-width: 340px;
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  text-align: center;
+  line-height: 1.5;
+}

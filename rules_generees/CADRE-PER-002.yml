@@ -1,0 +1,25 @@
+title: Tâche planifiée suspecte (Scheduled Task)
+id: 8f35c07e-2897-4448-b3d5-846b0350c01b
+status: experimental
+description: |
+  Crée une tâche planifiée qui exécute un programme bénin au démarrage. Permet de tester la détection de persistance via schtasks.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.persistence
+  - attack.t1053_005
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'schtasks'
+  condition: selection
+falsepositives:
+  - GPO déploiement de tâches
+  - Software installer legit
+  - Update schedulers (Adobe, Java)
+level: medium

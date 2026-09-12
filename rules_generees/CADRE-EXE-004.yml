@@ -1,0 +1,24 @@
+title: WMIC Process Call (legacy LOLBIN)
+id: b43d630d-cf60-4539-a7c4-c79d68871342
+status: experimental
+description: |
+  Appel WMIC pour récupérer la liste des processus — détection d'un LOLBIN courant dans les ransomwares.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.execution
+  - attack.t1047
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'processid'
+  condition: selection
+falsepositives:
+  - Scripts d'inventaire SCCM
+  - Monitoring agents
+level: low

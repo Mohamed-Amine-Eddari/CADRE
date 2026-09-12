@@ -1,0 +1,10 @@
+# Sigma rules — Templates
+# ===========================================
+# Ces templates sont utilisés pour la génération déterministe
+# de règles Sigma à partir du catalogue d'attaques.
+#
+# Pourquoi pas de LLM ?
+# - Reproductibilité : même entrée = même sortie
+# - Auditabilité : pas d'hallucination
+# - Confidentialité : aucune donnée ne quitte la machine
+# ===========================================

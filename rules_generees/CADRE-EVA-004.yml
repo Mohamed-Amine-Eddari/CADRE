@@ -1,0 +1,23 @@
+title: Masquerading — binaire renommé svchost.exe hors System32
+id: 713df208-bf67-4309-b671-a19b101a48d7
+status: experimental
+description: |
+  Copie un binaire Windows légitime (notepad.exe) sous le nom svchost.exe dans C:\Windows\Temp — chemin où ce processus système ne s'exécute jamais légitimement — l'exécute brièvement puis nettoie.
+references:
+  - https://attack.mitre.org/techniques/T1036/005/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1036_005
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'Windows\Temp\svchost.exe'
+  condition: selection
+falsepositives:
+  - Aucun connu — svchost.exe légitime ne s'exécute que depuis System32/SysWOW64, jamais depuis Temp
+level: low

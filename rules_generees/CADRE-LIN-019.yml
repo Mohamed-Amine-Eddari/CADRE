@@ -1,0 +1,23 @@
+title: Data Destruction Test (dd + rm, safe)
+id: 29fa858b-74eb-4d2d-9ea1-550c6236d9ba
+status: experimental
+description: |
+  Crée puis supprime un fichier temporaire (simule un wiper, test safe).
+references:
+  - https://attack.mitre.org/techniques/T1485/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.impact
+  - attack.t1485
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'dd if=/dev/zero'
+  condition: selection
+falsepositives:
+  - Maintenance disque
+  - Scripts de nettoyage
+level: medium

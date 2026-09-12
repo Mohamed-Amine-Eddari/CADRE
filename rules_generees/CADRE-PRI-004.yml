@@ -1,0 +1,24 @@
+title: "Ajout d'un compte au groupe Administrateurs (Account Manipulation)"
+id: ff596df8-b5f4-431d-b15c-6a03dc334969
+status: experimental
+description: |
+  Crée un compte de test, l'ajoute au groupe local privilégié, puis retire le compte et le supprime — teste la détection de l'élévation via appartenance à un groupe, pas juste la création du compte (déjà couverte par CADRE-PER-001/T1136.001).
+references:
+  - https://attack.mitre.org/techniques/T1098/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.privilege_escalation
+  - attack.t1098
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4732
+    user.target.group.name|contains: 'Administrateurs'
+  condition: selection
+falsepositives:
+  - Administration légitime des groupes locaux
+  - Scripts de provisioning
+level: medium

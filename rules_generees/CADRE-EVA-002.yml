@@ -1,0 +1,24 @@
+title: Obfuscation basique (Base64 PowerShell)
+id: ead1f344-95cd-4854-a671-a41e86fcfb8e
+status: experimental
+description: |
+  Exécute une commande PowerShell encodée en Base64 pour tester la détection d'obfuscation (LoLBas).
+references:
+  - https://attack.mitre.org/techniques/T1027/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1027
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'Gett-PgsSysTem'
+  condition: selection
+falsepositives:
+  - Signed scripts de fournisseurs
+  - GPO logon scripts
+level: medium

@@ -1,0 +1,24 @@
+title: Network Configuration Discovery
+id: b22c6865-1948-4d2a-9232-a54df0de6c63
+status: experimental
+description: |
+  Énumère les interfaces réseau et la table ARP. Teste la détection de reconnaissance réseau.
+references:
+  - https://attack.mitre.org/techniques/T1016/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1016
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'ipconfig'
+  condition: selection
+falsepositives:
+  - DHCP client logs
+  - Network troubleshooting scripts
+level: low

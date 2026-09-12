@@ -1,0 +1,24 @@
+title: Archivage de données collectées (Compress-Archive)
+id: a8044097-e7c3-4d27-b8d8-80b1239b755c
+status: experimental
+description: |
+  Compresse un répertoire de test avec l'utilitaire natif PowerShell, puis supprime l'archive — teste la détection d'archivage pré-exfiltration.
+references:
+  - https://attack.mitre.org/techniques/T1560/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.collection
+  - attack.t1560_001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'Compress-Archive -Path'
+  condition: selection
+falsepositives:
+  - Scripts de sauvegarde automatisés
+  - Déploiement logiciel (packagers MSI)
+level: low

@@ -1,0 +1,24 @@
+title: Test de connectivité RDP (Remote Desktop Protocol)
+id: 0b562e3b-8dc2-4081-a2ff-93ec7950ae61
+status: experimental
+description: |
+  Teste la connectivité TCP vers le port RDP local, sans authentification réelle — valide la détection de reconnaissance ou de mouvement latéral RDP.
+references:
+  - https://attack.mitre.org/techniques/T1021/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.lateral_movement
+  - attack.t1021_001
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: '3389'
+  condition: selection
+falsepositives:
+  - Scripts de monitoring réseau
+  - Health checks RDP
+level: low

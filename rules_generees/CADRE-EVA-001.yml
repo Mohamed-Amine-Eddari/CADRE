@@ -1,0 +1,23 @@
+title: Suspicion de log tampering (Defender status)
+id: 14da07f1-ef4f-418d-8767-f1008e621517
+status: experimental
+description: |
+  Interroge l'état de Windows Defender pour simuler une reconnaissance de défenses. NE DÉSACTIVE PAS le defender.
+references:
+  - https://attack.mitre.org/techniques/T1518/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1518_001
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'WinDefend'
+  condition: selection
+falsepositives:
+  - Admin checking defender status
+level: low

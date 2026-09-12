@@ -1,0 +1,23 @@
+title: System Owner/User Discovery (id/whoami)
+id: bd94a894-67cb-4b1d-a53a-7ca9baefaf68
+status: experimental
+description: |
+  Affiche l'utilisateur courant et ses groupes.
+references:
+  - https://attack.mitre.org/techniques/T1033/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1033
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'id; whoami'
+  condition: selection
+falsepositives:
+  - Scripts de diagnostic
+  - Session légitime
+level: low

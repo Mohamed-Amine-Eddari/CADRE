@@ -1,0 +1,23 @@
+title: System Network Connections Discovery (ss)
+id: db4651de-e62f-4cbb-aaaf-d78016beafe4
+status: experimental
+description: |
+  Énumère les connexions réseau actives via ss.
+references:
+  - https://attack.mitre.org/techniques/T1049/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1049
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'ss -tanp'
+  condition: selection
+falsepositives:
+  - Diagnostic réseau
+  - Supervision
+level: low

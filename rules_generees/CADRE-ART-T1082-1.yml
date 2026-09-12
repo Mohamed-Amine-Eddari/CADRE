@@ -1,0 +1,23 @@
+title: "[ART] System Information Discovery (systeminfo)"
+id: 3d783818-efa4-4aaa-bad5-3b9d4770cfd3
+status: experimental
+description: |
+  Collecte les informations système via systeminfo — reconnaissance bénigne classique en début d'intrusion.
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: CADRE PFA
+date: 2026/08/09
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    event.code: 1
+    process.command_line|contains: 'systeminfo'
+  condition: selection
+falsepositives:
+  - Aucun connu
+level: low

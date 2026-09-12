@@ -1,0 +1,24 @@
+title: Tentative de requête SPN (Kerberoasting)
+id: 105783bd-f795-4418-b927-f4100da14fbf
+status: experimental
+description: |
+  Tente une requête setspn pour lister les comptes de service (échec attendu hors domaine) — baseline de détection Kerberoasting.
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1558_003
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: '-Q */*'
+  condition: selection
+falsepositives:
+  - Audit AD légitime des SPN
+  - Outils d'inventaire de comptes de service
+level: medium

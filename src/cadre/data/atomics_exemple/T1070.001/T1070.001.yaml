@@ -1,0 +1,15 @@
+attack_technique: T1070.001
+display_name: 'Indicator Removal: Clear Windows Event Logs'
+atomic_tests:
+  - name: Clear Security event log (anti-forensic, DESTRUCTIVE)
+    auto_generated_guid: 7d8c6e33-0000-4d00-9c00-cadre000ir01
+    description: |
+      Efface le journal d'événements Security via wevtutil — anti-forensic
+      DESTRUCTEUR. Présent pour démontrer le refus par le filtre de sécurité.
+    supported_platforms:
+      - windows
+    executor:
+      command: |
+        wevtutil cl Security
+      name: command_prompt
+      elevation_required: true

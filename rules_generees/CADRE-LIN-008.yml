@@ -1,0 +1,23 @@
+title: System Network Configuration Discovery (ip)
+id: 882da9e1-3aed-4501-86fe-09ba8baa005c
+status: experimental
+description: |
+  Énumère les interfaces réseau via ip addr.
+references:
+  - https://attack.mitre.org/techniques/T1016/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1016
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'ip addr show >/dev/null'
+  condition: selection
+falsepositives:
+  - Diagnostic réseau
+  - Scripts de configuration
+level: low

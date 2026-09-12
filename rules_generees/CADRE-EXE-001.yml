@@ -1,0 +1,25 @@
+title: PowerShell - Discovery (Get-Process)
+id: 1becb606-8f14-40c4-9be9-b08ca7205027
+status: experimental
+description: |
+  Exécute une commande PowerShell bénigne pour vérifier la télémétrie d'exécution de scripts.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.execution
+  - attack.t1059_001
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'CADRE_PS_BASELINE'
+  condition: selection
+falsepositives:
+  - Sysmon configuration check
+  - Windows Update health script
+  - Defender definition update
+level: low

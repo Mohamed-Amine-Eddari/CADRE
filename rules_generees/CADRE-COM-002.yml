@@ -1,0 +1,24 @@
+title: Téléchargement via certutil (Ingress Tool Transfer)
+id: d6604373-9e95-4e58-a02e-0955f40fbd44
+status: experimental
+description: |
+  Utilise certutil -urlcache pour télécharger un fichier bénin — LOLBIN classique de transfert d'outils en C2.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+author: CADRE PFA
+date: 2026/08/18
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    event.code: 1
+    process.command_line|contains: '-urlcache -split -f'
+  condition: selection
+falsepositives:
+  - Vérification de certificats légitime
+  - Scripts de déploiement interne
+level: medium

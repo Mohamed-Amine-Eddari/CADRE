@@ -1,0 +1,271 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cadre"
+version = "1.5.0"
+description = "Continuous Adversary-Driven Rule Engineering — Audit SOC automatisé MITRE ATT&CK"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Mohamed Amine EDDARI", email = "eddarimedamine@gmail.com" },
+]
+keywords = [
+    "soc",
+    "cybersecurity",
+    "mitre-attack",
+    "sigma",
+    "elastic",
+    "kibana",
+    "detection-engineering",
+    "audit",
+    "rgpd",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPL-3.0+)",
+    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Systems Administration",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "click>=8.1.7",
+    "rich>=13.7.0",
+    "requests>=2.32.0",
+    "urllib3>=2.2.0",
+    "python-dotenv>=1.0.0",
+    "cryptography>=50.0.0",  # < 50.0.0 : PYSEC-2026-3552 (doit rester aligné sur requirements.txt)
+    "keyring>=24.2.0",
+    "pywinrm>=0.4.3",
+    "requests-ntlm>=1.3.0",  # transport NTLM WinRM (cible Windows)
+    "paramiko>=3.4.0",  # transport SSH (cible Linux) — était absent, install packagé cassé sans lui
+    "pysigma>=0.11.0",
+    "pysigma-backend-elasticsearch>=1.0.0",
+    "pyyaml>=6.0.1",
+    "reportlab>=4.0.0",  # export PDF natif des rapports de cycle (dashboard)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "black>=23.12.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "bandit>=1.7.7",
+    "pip-audit>=2.6.0",
+]
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "myst-parser>=2.0.0",
+]
+sigma = [
+    "sigma-cli>=0.6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Mohamed-Amine-Eddari/cadre"
+Documentation = "https://github.com/Mohamed-Amine-Eddari/cadre/blob/main/docs/GUIDE_PROJET.md"
+Repository = "https://github.com/Mohamed-Amine-Eddari/cadre"
+Issues = "https://github.com/Mohamed-Amine-Eddari/cadre/issues"
+Changelog = "https://github.com/Mohamed-Amine-Eddari/cadre/blob/main/CHANGELOG.md"
+
+[project.scripts]
+cadre = "cadre.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cadre*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+cadre = [
+    "py.typed",
+    "templates/*.yml",
+    "templates/*.yaml",
+    "data/atomics_exemple/**/*.yaml",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312", "py313"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".eggs", ".git", ".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+    "N",
+    "SIM",
+    "PTH",
+    "PL",
+    "RUF",
+    "ARG",
+    "RET",
+    "TRY",
+]
+ignore = [
+    # Beaucoup de fonctions du domaine (config VM/Elastic/Kibana, génération
+    # de règle) prennent légitimement plus de 5 paramètres nommés explicites
+    # -- plus lisible qu'un dict générique à cet endroit précis.
+    "PLR0913",
+    # Comparaisons à des constantes auto-documentées par leur contexte
+    # (codes HTTP, seuils métier déjà nommés dans le docstring voisin) --
+    # extraire une constante nommée pour chacune n'ajoute rien ici.
+    "PLR2004",
+    # Messages d'erreur descriptifs inline (ErreurSecurite,
+    # ErreurCatalogueUtilisateur, etc.) plutôt qu'une sous-classe
+    # d'exception par message -- plus lisible pour ce volume de cas d'erreur
+    # ponctuels et non réutilisés ailleurs.
+    "TRY003",
+    # Le logger interne CADRE (CADRELogger) n'a pas de méthode .exception() ;
+    # TRY400/TRY300 supposent le module stdlib `logging`, non applicable ici.
+    "TRY400",
+    "TRY300",
+    # Pattern singleton (obtenir_coffre/obtenir_logger) volontaire.
+    "PLW0603",
+    # Convention de nommage française assumée dans tout le projet.
+    "N818",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",
+    "S105",
+    "S106",
+    "PLR2004",
+    "ARG",
+    "FBT",
+    # Imports locaux volontaires (fixtures ciblées, éviter les coûts d'import inutiles).
+    "PLC0415",
+    "PTH123",
+    "PTH109",
+]
+"src/cadre/cli.py" = [
+    "PLR0913",
+    # Imports différés dans les sous-commandes Click (démarrage CLI rapide).
+    "PLC0415",
+]
+"src/cadre/catalogue_attaques.py" = [
+    # Descriptions/références MITRE : chaînes littérales longues, non wrappables par black.
+    "E501",
+]
+"src/cadre/dashboard.py" = [
+    # Template HTML/CSS/JS embarqué (_PAGE_DASHBOARD) : wrapper ces lignes
+    # nuirait à la lisibilité du gabarit sans bénéfice réel (ce n'est pas
+    # du code Python exécuté ligne à ligne).
+    "E501",
+]
+"src/cadre/rapport.py" = [
+    # Rapport HTML interactif autonome (generer_rapport_html) : CSS/JS
+    # embarqué, même justification que dashboard.py.
+    "E501",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["cadre"]
+
+[tool.mypy]
+python_version = "3.11"
+strict_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+no_implicit_optional = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--tb=short",
+    "--showlocals",
+    "--color=yes",
+]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning:keyring.*",
+    "ignore::DeprecationWarning:winrm.*",
+    "ignore::PendingDeprecationWarning",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests requiring a real environment",
+    "security: marks security-related tests",
+]
+
+[tool.coverage.run]
+source = ["src/cadre"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+fail_under = 75
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "def __repr__",
+    "\\.\\.\\.",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests/", "venv/", ".venv/"]
+skips = ["B101"]

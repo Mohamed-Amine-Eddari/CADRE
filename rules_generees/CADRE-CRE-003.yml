@@ -1,0 +1,24 @@
+title: Recherche de credentials en clair (Credentials In Files)
+id: f90748c5-6d9b-4fc0-9e5e-63f668c33082
+status: experimental
+description: |
+  Recherche le mot 'password' dans les fichiers texte d'un répertoire temporaire — pattern classique de recherche de credentials en clair.
+references:
+  - https://attack.mitre.org/techniques/T1552/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1552_001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'password'
+  condition: selection
+falsepositives:
+  - Audits de sécurité internes
+  - Scripts de compliance
+level: low

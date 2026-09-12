@@ -1,0 +1,22 @@
+title: Sudo Rights Enumeration (sudo -l)
+id: 938b6606-463d-4574-8e56-67b50ec98e6b
+status: experimental
+description: |
+  Énumère les droits sudo du compte courant — reconnaissance de privilège escalade classique avant tentative d'abus.
+references:
+  - https://attack.mitre.org/techniques/T1548/003/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.privilege_escalation
+  - attack.t1548_003
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'sudo -l'
+  condition: selection
+falsepositives:
+  - Vérification de routine par un administrateur légitime
+level: low

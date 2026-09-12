@@ -1,0 +1,23 @@
+title: Bash Reverse Shell Test (safe)
+id: 8e91818f-420a-4aa1-9770-14fc9a378506
+status: experimental
+description: |
+  Tente une reverse shell via bash (échec attendu vers IP bogus) — détecte les LOLBIN shell.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.execution
+  - attack.t1059_004
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'CADRE_LIN_BASH_TEST'
+  condition: selection
+falsepositives:
+  - Scripts shell légitimes
+  - Crontab admin
+level: low
