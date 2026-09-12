@@ -66,6 +66,25 @@ Les organisations font face à **trois défis critiques** dans la gestion de leu
 
 ---
 
+## Pour qui ?
+
+| Vous êtes... | CADRE vous sert à... |
+|---|---|
+| **Étudiant en cybersécurité** | Apprendre l'ingénierie de détection en pratique — chaque règle est reliée à une attaque réelle et à une preuve TP/FP, pas à un exercice théorique. |
+| **Blue team / analyste SOC** | Mesurer la couverture de détection réelle de votre stack Elastic/Kibana face à MITRE ATT&CK, sans deviner ce qui est réellement détecté. |
+| **Red team / purple team** | Rejouer un catalogue d'attaques homologué (dont Atomic Red Team filtré) de façon reproductible, avec preuve automatique de ce qui a été vu côté défense. |
+| **Étudiant en projet de fin d'études** | Une base de référence pour un projet similaire : pipeline complet, tests, CI, documentation — à forker et adapter (licence AGPL-3.0). |
+
+**Avant de vous lancer, un point honnête** : CADRE n'est pas un outil
+« clone et lance » — c'est un outil de laboratoire qui suppose une vraie
+infrastructure (2 VM + une stack Docker, 8-16 Go de RAM). Pour essayer le
+pipeline sans rien installer côté VM, utilisez `--simulate` (voir plus
+bas) ; pour comprendre les concepts avant de vous lancer,
+[`docs/GUIDE_PROJET.md`](docs/GUIDE_PROJET.md) explique tout pas à pas,
+même si le SOC/MITRE ATT&CK/Sigma vous sont inconnus.
+
+---
+
 ## Fonctionnalités
 
 - **Catalogue déterministe** de 68 attaques MITRE ATT&CK (46 Windows + 22 Linux) couvrant 12 tactiques dans le périmètre (Initial Access, Execution, Persistence, Discovery, Credential Access, Lateral Movement, Defense Evasion, Exfiltration, Command and Control, Impact, Privilege Escalation, Collection) — **multi-OS** (Windows via WinRM, Linux via SSH)
