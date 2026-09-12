@@ -1,0 +1,17 @@
+# Normalise les fins de ligne dans le dépôt (stockage LF), quel que soit
+# l'OS du contributeur -- évite les faux diffs et les avertissements
+# "LF will be replaced by CRLF" sur Windows.
+* text=auto eol=lf
+
+# Fichiers Windows qui doivent garder CRLF à l'extraction.
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binaires : jamais de conversion de fin de ligne.
+*.png binary
+*.webp binary
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.woff2 binary
+*.ico binary

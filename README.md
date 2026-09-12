@@ -13,7 +13,7 @@ déployant automatiquement des règles de détection Sigma dans Kibana.**
 [![CADRE CI](https://github.com/Mohamed-Amine-Eddari/CADRE/actions/workflows/cadre-ci.yml/badge.svg)](https://github.com/Mohamed-Amine-Eddari/CADRE/actions/workflows/cadre-ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)]()
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 </div>
 
