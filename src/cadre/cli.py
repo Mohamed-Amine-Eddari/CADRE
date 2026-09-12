@@ -1911,13 +1911,11 @@ def daemon(intervalle, pidfile):
         )
         sys.exit(1)
 
-    # Enfant : lance la boucle -- mypy tourne sous Windows dans cet environnement
-    # et traite donc `sys.platform == "win32"` comme statiquement vrai (option
-    # --platform non fixée = plateforme d'exécution de mypy) : il ne voit que
-    # la branche `else` ci-dessus (qui se termine par sys.exit) et croit ce
-    # code jamais atteint. Réellement atteignable sur un vrai POSIX, où
-    # `sys.platform != "win32"` sans le `return` du parent (fork==0, enfant).
-    from .boucle import BoucleAutomatisee  # type: ignore[unreachable]
+    # Enfant : lance la boucle. `[tool.mypy] platform = "linux"` (pyproject.toml)
+    # fixe l'analyse sur la plateforme réelle de la CI -- mypy y voit
+    # correctement cette branche comme atteignable (POSIX, fork==0, enfant),
+    # sans ignore nécessaire.
+    from .boucle import BoucleAutomatisee
 
     boucle = BoucleAutomatisee(intervalle_sec=intervalle)
     try:

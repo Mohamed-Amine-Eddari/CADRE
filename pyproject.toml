@@ -208,6 +208,13 @@ known-first-party = ["cadre"]
 
 [tool.mypy]
 python_version = "3.11"
+# Fixé sur la plateforme réelle de la CI (ubuntu-latest) plutôt que de
+# suivre l'OS de la machine qui lance mypy (par défaut) -- sans ça, mypy
+# sous Windows perçoit `sys.platform` différemment de mypy en CI Linux,
+# ce qui a déjà fait diverger le comportement de vérifications statiques
+# (`unreachable`/`unused-ignore`) entre le poste de dev et la CI, invisible
+# tant que la CI elle-même n'était pas vérifiée.
+platform = "linux"
 strict_optional = true
 warn_unused_ignores = true
 warn_redundant_casts = true
