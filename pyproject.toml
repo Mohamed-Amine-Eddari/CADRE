@@ -71,7 +71,7 @@ dev = [
     "pip-audit>=2.6.0",
 ]
 docs = [
-    "sphinx>=7.2.0",
+    "sphinx>=9.0.4",
     "sphinx-rtd-theme>=2.0.0",
     "myst-parser>=2.0.0",
 ]

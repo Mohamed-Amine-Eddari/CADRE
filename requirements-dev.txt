@@ -28,7 +28,7 @@ pip-audit>=2.6.0
 # Voir : https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 
 # --- Documentation ---
-sphinx>=7.2.0
+sphinx>=9.0.4
 sphinx-rtd-theme>=2.0.0
 myst-parser>=2.0.0
 sphinx-autodoc-typehints>=1.25.0
