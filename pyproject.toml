@@ -145,8 +145,11 @@ select = [
 ignore = [
     # Beaucoup de fonctions du domaine (config VM/Elastic/Kibana, génération
     # de règle) prennent légitimement plus de 5 paramètres nommés explicites
-    # -- plus lisible qu'un dict générique à cet endroit précis.
+    # -- plus lisible qu'un dict générique à cet endroit précis. PLR0917 est
+    # la règle sœur (arguments positionnels uniquement, stricte depuis
+    # ruff 0.16) : même raison, même décision.
     "PLR0913",
+    "PLR0917",
     # Comparaisons à des constantes auto-documentées par leur contexte
     # (codes HTTP, seuils métier déjà nommés dans le docstring voisin) --
     # extraire une constante nommée pour chacune n'ajoute rien ici.
@@ -237,6 +240,15 @@ filterwarnings = [
     "ignore::DeprecationWarning:keyring.*",
     "ignore::DeprecationWarning:winrm.*",
     "ignore::PendingDeprecationWarning",
+    # click.testing.CliRunner.isolated_filesystem() est dépréciée (Click
+    # 8.5+, suppression prévue en Click 9.0) et utilisée dans 77 tests --
+    # migration réelle vers tmp_path à faire avant Click 9.0, pas un simple
+    # find-replace (isolated_filesystem change le CWD, tmp_path non).
+    # Suppression temporaire du bruit en attendant cette migration dédiée.
+    # Pas de module ciblé : Click attribue l'avertissement au fichier
+    # appelant (stacklevel), jamais à click lui-même -- impossible à cibler
+    # plus précisément qu'un filtre sur le message.
+    "ignore:'isolated_filesystem' is deprecated:DeprecationWarning",
 ]
 markers = [
     "slow: marks tests as slow",
