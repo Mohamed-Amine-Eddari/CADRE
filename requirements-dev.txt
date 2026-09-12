@@ -31,7 +31,7 @@ pip-audit>=2.6.0
 sphinx>=7.2.0
 sphinx-rtd-theme>=2.0.0
 myst-parser>=2.0.0
-sphinx-autodoc-typehints>=1.25.0
+sphinx-autodoc-typehints>=3.6.1
 # Requis par myst_enable_extensions += ["linkify"] (docs/conf.py) -- régression
 # (audit) : `make docs`/`sphinx-build` échouait (ModuleNotFoundError) sans lui,
 # jamais déclaré ici alors que la doc l'active depuis le début.
