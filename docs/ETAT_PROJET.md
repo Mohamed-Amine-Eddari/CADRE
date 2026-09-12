@@ -65,11 +65,6 @@ EDR/hyperviseur ».
   C:\Program Files\Oracle\VirtualBox\*
   C:\Users\<votre-utilisateur>\VirtualBox VMs\*
   ```
-  Un brouillon de demande à l'administrateur SentinelOne existe à la
-  racine du dépôt (`demande-exclusion-sentinelone*.txt`, `email-admin-
-  sentinelone.txt`) — **non versionnés intentionnellement** (correspondance
-  personnelle, pas un livrable du projet). À relancer/adapter si le
-  blocage persiste.
 - Effet de bord observé une fois l'exclusion partiellement en place :
   Winlogbeat peut refuser un simple redémarrage de service à cause de la
   protection anti-sabotage (« tamper protection ») de l'EDR — seul un
