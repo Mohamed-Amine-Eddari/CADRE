@@ -212,6 +212,11 @@ flowchart TB
     end
 ```
 
+Version interactive (vues nommées, thèmes clair/sombre, export) :
+[`docs/_static/diagrams/cadre-architecture.html`](docs/_static/diagrams/cadre-architecture.html)
+— téléchargez-le et ouvrez-le dans un navigateur (fichier autonome, aucune
+dépendance réseau).
+
 ---
 
 ## Démarrage rapide (5 minutes)
