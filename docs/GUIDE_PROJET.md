@@ -68,8 +68,8 @@ Red Team)** :
 - **68 attaques** au catalogue, couvrant **12 tactiques MITRE ATT&CK** et
   56 techniques uniques, sous-techniques comprises (44 à risque faible, 21 à
   risque moyen, 3 à risque élevé — chiffres exacts obtenus via `cadre stats`)
-- **23 modules Python** dans `src/cadre/`
-- **1148 tests** automatisés, **93,99% de couverture de code**
+- **24 modules Python** dans `src/cadre/`
+- **1168 tests** automatisés, **93,6% de couverture de code**
 - SIEM cible : **Elastic + Kibana** (le seul actuellement supporté)
 - **1 assistant IA optionnel** (Ollama local) — jamais dans le chemin de
   génération/validation/déploiement des règles
@@ -709,7 +709,7 @@ CADRE/
 ├── DEMARRER-CADRE.bat, ARRETER-CADRE.bat        # lanceurs un-clic (Windows) --
 │                                                 wrappent scripts/*.ps1 ci-dessous
 ├── .github/                                     # CI, dependabot, templates d'issues/PR
-├── src/cadre/                                   # le code (23 modules, section 5)
+├── src/cadre/                                   # le code (24 modules, section 5)
 ├── dashboard/                                   # frontend statique du dashboard web (HTML/CSS/JS)
 ├── scripts/                                     # démarrage/arrêt de l'environnement (PowerShell)
 ├── tests/                                       # 1168 tests (section 8)

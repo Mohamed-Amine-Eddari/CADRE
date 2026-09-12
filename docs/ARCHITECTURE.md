@@ -60,7 +60,7 @@ validation TP/FP restent cherchées côté Windows, inchangées. Voir
 ### Modules non représentés ci-dessus (interfaces, IA, sources d'attaques)
 
 Le diagramme montre le **cœur du cycle par attaque** (8 modules). `src/cadre/`
-compte réellement **23 modules** (hors `__init__.py`) — les 15 restants sont
+compte réellement **24 modules** (hors `__init__.py`) — les 16 restants sont
 soit des **points d'entrée** qui pilotent le cycle depuis l'extérieur, soit
 des **sources d'attaques additionnelles**, soit des utilitaires transverses :
 
@@ -81,6 +81,7 @@ des **sources d'attaques additionnelles**, soit des utilitaires transverses :
 | `metriques.py` | Endpoint Prometheus (`cadre metrics`) | Lit les rapports produits par `rapport.py` ; importe `catalogue_attaques` pour les totaux |
 | `reseau.py` | Vérification TLS centralisée | Utilisé par `orchestrateur` pour tous les appels HTTP sortants (Elastic/Kibana) |
 | `validation_regle.py` | Validation d'une règle Sigma existante contre la télémétrie de l'utilisateur (`cadre valider-regle`) | Réutilise `compilation_sigma.double_validation_tp_fp` — même moteur de preuve que le cycle normal |
+| `synchronise_secrets.py` | Repousse `CADRE_ELASTIC_PASS` vers Winlogbeat/Auditbeat après rotation (`cadre secrets-sync-beats`) | Utilise `orchestrateur` (WinRM/SSH) pour déposer le nouveau mot de passe sans jamais le faire transiter par un argument de ligne de commande |
 
 ---
 
