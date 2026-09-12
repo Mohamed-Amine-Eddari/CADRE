@@ -214,7 +214,7 @@ def test_cli_scenario_inconnu():
     assert resultat.exit_code == 1
 
 
-def test_cli_scenario_simulation(tmp_path):
+def test_cli_scenario_simulation(tmp_path, monkeypatch):
     """`--output` ne redirige QUE `repertoire_rapports` (voir `cli.py::scenario`,
     `OrchestrateurCADRE(config={"repertoire_rapports": ...})`, sans
     `repertoire_regles`) -- `isolated_filesystem()` est donc nécessaire pour
@@ -223,11 +223,11 @@ def test_cli_scenario_simulation(tmp_path):
     vrai dans rules_generees/ à chaque run (trouvé par bissection, même
     cause que le correctif apporté à test_atomic_red_team.py)."""
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        resultat = runner.invoke(
-            cli,
-            ["scenario", "--id", "RECONNAISSANCE", "--simulate", "--output", str(tmp_path)],
-        )
+    monkeypatch.chdir(tmp_path)
+    resultat = runner.invoke(
+        cli,
+        ["scenario", "--id", "RECONNAISSANCE", "--simulate", "--output", str(tmp_path)],
+    )
     assert resultat.exit_code == 0, resultat.output
     assert "Couverture de la chaîne" in resultat.output
     # Le rapport kill chain dédié doit avoir été écrit.

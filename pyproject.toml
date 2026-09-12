@@ -247,15 +247,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:keyring.*",
     "ignore::DeprecationWarning:winrm.*",
     "ignore::PendingDeprecationWarning",
-    # click.testing.CliRunner.isolated_filesystem() est dépréciée (Click
-    # 8.5+, suppression prévue en Click 9.0) et utilisée dans 77 tests --
-    # migration réelle vers tmp_path à faire avant Click 9.0, pas un simple
-    # find-replace (isolated_filesystem change le CWD, tmp_path non).
-    # Suppression temporaire du bruit en attendant cette migration dédiée.
-    # Pas de module ciblé : Click attribue l'avertissement au fichier
-    # appelant (stacklevel), jamais à click lui-même -- impossible à cibler
-    # plus précisément qu'un filtre sur le message.
-    "ignore:'isolated_filesystem' is deprecated:DeprecationWarning",
 ]
 markers = [
     "slow: marks tests as slow",
