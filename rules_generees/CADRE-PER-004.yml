@@ -1,0 +1,24 @@
+title: Registry Run Key (HKCU)
+id: 878e975c-32d1-4739-ad6f-3a0f8abb9647
+status: experimental
+description: |
+  Ajoute une clé Run dans HKCU (puis la retire) pour tester la détection de persistance par Run keys.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.persistence
+  - attack.t1547_001
+logsource:
+  product: windows
+  category: registry_event
+detection:
+  selection:
+    EventID: 13
+    TargetObject|contains: 'CurrentVersion\Run\'
+  condition: selection
+falsepositives:
+  - Installation logicielle
+  - Auto-start de drivers
+level: medium

@@ -1,0 +1,24 @@
+title: Cloud Upload Simulation (rclone)
+id: e611ab41-2c2e-4910-bd93-3865d433e975
+status: experimental
+description: |
+  Tente d'utiliser rclone copy (échec si non installé) pour tester la détection d'exfiltration cloud.
+references:
+  - https://attack.mitre.org/techniques/T1567/002/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.exfiltration
+  - attack.t1567_002
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'rclone'
+  condition: selection
+falsepositives:
+  - Backup cloud légitime
+  - Sync OneDrive/Google Drive
+level: medium

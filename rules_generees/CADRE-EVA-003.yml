@@ -1,0 +1,24 @@
+title: Deobfuscate/Decode via certutil (-decode)
+id: de62d6d4-0b5c-4e6a-a865-19ffec279045
+status: experimental
+description: |
+  Décode un fichier Base64 bénin avec certutil -decode (puis nettoie) — LOLBIN classique de désobfuscation de charge utile.
+references:
+  - https://attack.mitre.org/techniques/T1140/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1140
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'certutil -decode'
+  condition: selection
+falsepositives:
+  - Gestion de certificats légitime
+  - Scripts de déploiement
+level: low

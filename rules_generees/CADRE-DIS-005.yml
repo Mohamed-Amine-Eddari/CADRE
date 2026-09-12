@@ -1,0 +1,24 @@
+title: System Network Connections Discovery (netstat)
+id: 10782a0c-50a1-4ff6-b1e7-f401c7dae978
+status: experimental
+description: |
+  Énumère les connexions réseau actives via netstat -ano (reconnaissance réseau).
+references:
+  - https://attack.mitre.org/techniques/T1049/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1049
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'NETSTAT.EXE" -ano'
+  condition: selection
+falsepositives:
+  - Diagnostic réseau administrateur
+  - Outils de supervision
+level: low

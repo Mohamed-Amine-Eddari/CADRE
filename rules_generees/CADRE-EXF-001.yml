@@ -1,0 +1,24 @@
+title: DNS Exfiltration Simulation
+id: 8272c485-29e6-4346-8123-df762c8cd5b2
+status: experimental
+description: |
+  Effectue une résolution DNS vers un domaine de test pour valider la détection d'exfiltration DNS.
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.exfiltration
+  - attack.t1048_003
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'cadre-test'
+  condition: selection
+falsepositives:
+  - Résolutions DNS normales
+  - Vérifications de connectivité
+level: low

@@ -1,0 +1,84 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: ^src/cadre/templates/sigma_template\.yml$
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        # 1000 -> 3000 : le rapport PFA exporté (PDF/DOCX avec diagrammes
+        # intégrés) dépasse le seuil initial (jusqu'à ~2,8 Mo) sans être une
+        # inclusion accidentelle -- c'est un livrable versionné à dessein.
+        args: ['--maxkb=3000']
+      - id: detect-private-key
+      # Pas de no-commit-to-branch : développeur solo, pas de flux
+      # branche+revue en place — bloquerait le flux direct-sur-main déjà
+      # utilisé tout au long du projet, sans bénéfice réel ici.
+
+  - repo: https://github.com/psf/black
+    rev: 26.5.1
+    hooks:
+      - id: black
+        args: ['--line-length=100']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
+    hooks:
+      - id: ruff
+        args: ['--fix', '--exit-non-zero-on-fix']
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--profile', 'black']
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.4
+    hooks:
+      - id: bandit
+        # Régression (audit) : `-ll` (medium+ uniquement) divergeait de la
+        # vraie CI (.github/workflows/cadre-ci.yml : `bandit -r src -q`,
+        # AUCUN filtre de sévérité) -- un finding LOW passait donc ce hook
+        # local silencieusement, puis échouait la CI seulement après coup.
+        args: ['-r', 'src/']
+        pass_filenames: false
+        additional_dependencies: ['bandit[toml]']
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.0
+    hooks:
+      - id: mypy
+        files: ^src/
+        additional_dependencies: ['pydantic', 'types-requests', 'types-paramiko', 'types-PyYAML']
+        args: ['--ignore-missing-imports']
+
+  # Hook local (pas de dépôt distant) : évite de référencer un tag de
+  # release externe non vérifié — utilise le pip-audit déjà installé dans
+  # l'environnement du contributeur (requirements-dev.txt).
+  - repo: local
+    hooks:
+      - id: pip-audit
+        name: pip-audit (CVE des dépendances)
+        entry: python -m pip_audit -r requirements.txt --ignore-vuln PYSEC-2026-2447
+        language: system
+        pass_filenames: false
+        files: ^requirements.*\.txt$
+
+      # Miroir exact de cadre-ci.yml (étape "Secrets (detect-secrets)") :
+      # même commande, même logique pass/fail. `detect-secrets scan` (sans
+      # --all-files) utilise la découverte git normale — rapide et borné au
+      # dépôt, pas de scan de .venv/.
+      - id: detect-secrets-scan
+        name: detect-secrets (miroir CI)
+        entry: >-
+          python -c "import json,subprocess,sys;
+          r=subprocess.run([sys.executable,'-m','detect_secrets','scan'],capture_output=True,text=True);
+          d=json.loads(r.stdout);
+          sys.exit(1 if d.get('results') else 0)"
+        language: system
+        pass_filenames: false

@@ -1,0 +1,23 @@
+title: Création de service Windows (Persistence)
+id: 4c5a9948-fd6c-4d56-a360-16b73aa8a719
+status: experimental
+description: |
+  Crée un service Windows test (auto-supprimé) pour valider la détection de persistance par service.
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.persistence
+  - attack.t1543_003
+logsource:
+  product: windows
+  service: system
+detection:
+  selection:
+    EventID: 7045
+  condition: selection
+falsepositives:
+  - MDM enrollment
+  - GPO software install
+level: medium

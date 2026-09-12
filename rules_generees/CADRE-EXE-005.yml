@@ -1,0 +1,24 @@
+title: rundll32 execution (LOLBIN)
+id: 9858f49f-ffb4-4071-8922-03e6fa1f4bcb
+status: experimental
+description: |
+  Appel rundll32 sans argument suspect, sert de baseline pour ce LOLBIN omniprésent.
+references:
+  - https://attack.mitre.org/techniques/T1218/011/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1218_011
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'rundll32.exe" /?'
+  condition: selection
+falsepositives:
+  - Installateurs logiciels
+  - MSI installers
+level: low

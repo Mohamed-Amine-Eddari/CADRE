@@ -1,0 +1,23 @@
+title: OS Credential Dumping (/etc/passwd & /etc/shadow)
+id: 46e23135-80d9-424d-9f3d-420cbef7a709
+status: experimental
+description: |
+  Tente de lire /etc/passwd et /etc/shadow (échec sur shadow sans root).
+references:
+  - https://attack.mitre.org/techniques/T1003/008/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1003_008
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'cat /etc/passwd /etc/shadow'
+  condition: selection
+falsepositives:
+  - Audit de sécurité
+  - Sauvegarde système
+level: high

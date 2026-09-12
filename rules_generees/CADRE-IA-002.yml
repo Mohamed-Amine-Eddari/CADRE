@@ -1,0 +1,23 @@
+title: Fausse page CAPTCHA
+id: 7b9f2e33-9ba9-4cb0-a0f1-416823931f36
+status: experimental
+description: |
+  L'utilisateur est incité à exécuter une commande PowerShell à partir d'une fausse page CAPTCHA pour télécharger et exécuter Lumma Stealer.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.execution
+  - attack.t1059_001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'CADRE_IA002_FAKECAPTCHA_TEST'
+  condition: selection
+falsepositives:
+  - Scripts d'administration PowerShell génériques
+level: low

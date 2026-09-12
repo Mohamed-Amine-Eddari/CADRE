@@ -1,0 +1,24 @@
+title: System Owner/User Discovery (whoami /all)
+id: f6ad5a0d-83fb-4523-8745-a6a9cb57a24f
+status: experimental
+description: |
+  Affiche l'utilisateur courant, ses groupes et privilèges via whoami /all.
+references:
+  - https://attack.mitre.org/techniques/T1033/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1033
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'whoami.exe" /all'
+  condition: selection
+falsepositives:
+  - Scripts de diagnostic
+  - Session utilisateur légitime
+level: low

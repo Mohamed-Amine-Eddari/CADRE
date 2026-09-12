@@ -1,0 +1,16 @@
+attack_technique: T1485
+display_name: Data Destruction
+atomic_tests:
+  - name: Overwrite free space with cipher (DESTRUCTIVE)
+    auto_generated_guid: 9f0a1b22-0000-4d00-9c00-cadre000dd01
+    description: |
+      Écrase l'espace libre du disque avec cipher /w — DESTRUCTEUR. Présent
+      pour démontrer que le filtre de sécurité de CADRE le REFUSE avant toute
+      exécution.
+    supported_platforms:
+      - windows
+    executor:
+      command: |
+        cipher /w:C:\
+      name: command_prompt
+      elevation_required: true

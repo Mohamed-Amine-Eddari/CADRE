@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- CSP de défense en profondeur (le serveur émet la même en en-tête HTTP,
+         qui fait autorité). Tout en 'self' : zéro ressource distante.
+         frame-ancestors absent ici : la spec l'ignore explicitement dans une
+         balise <meta> (jamais appliqué que via l'en-tête) -- X-Frame-Options
+         et le CSP header du serveur portent seuls la protection anti-clickjacking. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>CADRE — Continuous Adversary-Driven Rule Engineering</title>
+    <!-- Favicon en data: URI (autorisé par la CSP img-src, aucun fichier
+         supplémentaire) : un simple "C" sur l'accent du projet. Évite le
+         404 systématique sur /favicon.ico à chaque chargement. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2300C2A8'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23000000'%3EC%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/composants.css" />
+  </head>
+  <body>
+    <a class="skip-lien" href="#app">Aller au contenu</a>
+    <header id="slot-barre" class="entete-collante"></header>
+    <div class="console">
+      <nav id="nav-onglets" class="nav-onglets" aria-label="Sections"></nav>
+      <main id="app" class="app-contenu" tabindex="-1"></main>
+    </div>
+    <footer class="pied-page">
+      <span class="pied-copy">© 2026 CADRE · Continuous Adversary-Driven Rule Engineering</span>
+      <span class="pied-sep" aria-hidden="true">·</span>
+      <span>Mohamed Amine Eddari</span>
+      <span class="pied-sep" aria-hidden="true">·</span>
+      <span>Licence AGPL-3.0</span>
+      <span class="pied-statut"
+        >Projet de fin d'études (PFA), réalisé dans le cadre d'un stage en
+        cybersécurité.</span
+      >
+    </footer>
+    <!-- Un seul point d'entrée JS, en module, servi en 'self' (pas d'inline). -->
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+title: CADRE — Test Cycle (Générique)
+id: cadre-test-generic
+status: experimental
+description: |
+  Règle générique utilisée pour tester le pipeline CADRE.
+  NE PAS DÉPLOYER EN PRODUCTION.
+author: CADRE Orchestrator
+date: 2026/07/16
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID:
+      - 4688
+    process.name:
+      - 'cadre_test.exe'
+  condition: selection
+falsepositives:
+  - Aucun (règle de test)
+level: informational
+tags:
+  - attack.execution
+  - cadre.test

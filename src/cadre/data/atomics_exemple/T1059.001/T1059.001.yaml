@@ -1,0 +1,31 @@
+attack_technique: T1059.001
+display_name: 'Command and Scripting Interpreter: PowerShell'
+atomic_tests:
+  - name: PowerShell discovery (benign)
+    auto_generated_guid: 8b3f4c1a-0000-4d00-9c00-cadre000ps01
+    description: |
+      Exécute une commande PowerShell bénigne de découverte, avec un marqueur
+      distinctif pour valider la télémétrie d'exécution de scripts.
+    supported_platforms:
+      - windows
+    input_arguments:
+      output_marker:
+        description: Marqueur distinctif écrit par le test
+        type: string
+        default: CADRE_ART_PS_DISCOVERY
+    executor:
+      command: |
+        powershell.exe -NoProfile -Command "Write-Output '#{output_marker}'; Get-Process | Out-Null"
+      name: powershell
+      elevation_required: false
+  - name: Manual PowerShell step (non-automatable)
+    auto_generated_guid: 8b3f4c1a-0000-4d00-9c00-cadre000ps02
+    description: |
+      Étape décrite mais sans exécuteur automatisable — doit être IGNORÉE par
+      l'ingestion (executor manual).
+    supported_platforms:
+      - windows
+    executor:
+      name: manual
+      steps: |
+        Ouvrir PowerShell ISE et lancer le script à la main.

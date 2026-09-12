@@ -1,0 +1,24 @@
+title: Tentative SMB lateral (Admin share)
+id: d660a755-3b9d-48ad-90de-3fd7df5211a6
+status: experimental
+description: |
+  Tente d'accéder au partage ADMIN$ pour tester la détection de mouvement latéral.
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.lateral_movement
+  - attack.t1021_002
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+    winlog.event_data.LogonType|contains: '3'
+  condition: selection
+falsepositives:
+  - Service account misconfig
+  - Password rotation en cours
+level: medium

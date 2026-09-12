@@ -1,0 +1,194 @@
+# CADRE — Stack complète
+# ===========================================
+# Déploiement en 1 commande : docker compose up -d
+#
+# Composants :
+#   - Elasticsearch 8.13  : indexation des logs
+#   - Kibana 8.13          : visualisation + alertes
+#   - Ollama               : LLM local (optionnel)
+#   - CADRE orchestrateur  : le cœur du système
+#
+# ⚠️  Les mots de passe par défaut sont à changer en production
+# ⚠️  SSL désactivé par défaut pour simplifier le POC
+# ===========================================
+
+# Suppression de la directive "version" (dépréciée, docker compose v2+)
+
+services:
+  # ===========================================================================
+  # Elasticsearch — Indexation et recherche
+  # ===========================================================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: cadre-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?ELASTIC_PASSWORD manquant — copier .env.example vers .env et le renseigner}
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - cadre_elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - "127.0.0.1:9200:9200"
+    networks:
+      - cadre_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:${ELASTIC_PASSWORD:?ELASTIC_PASSWORD manquant} http://localhost:9200/_cluster/health | grep -E 'green|yellow' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
+
+  # ===========================================================================
+  # Kibana — Visualisation et alertes (Security)
+  # ===========================================================================
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    container_name: cadre-kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD:?KIBANA_PASSWORD manquant — copier .env.example vers .env et le renseigner}
+      - xpack.security.enabled=true
+    volumes:
+      - cadre_kibana_data:/usr/share/kibana/data
+    ports:
+      - "127.0.0.1:5601:5601"
+    networks:
+      - cadre_net
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:${ELASTIC_PASSWORD:?ELASTIC_PASSWORD manquant} http://localhost:5601/api/status | grep -E 'available' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    security_opt:
+      - no-new-privileges:true
+
+  # ===========================================================================
+  # Ollama — LLM local (Mistral, Llama, Qwen...)
+  # ===========================================================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cadre-ollama
+    restart: unless-stopped
+    volumes:
+      - cadre_ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    networks:
+      - cadre_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Le modèle doit être pull manuellement après le 1er démarrage :
+    # docker exec -it cadre-ollama ollama pull llama3.1:8b
+    # ou : docker exec -it cadre-ollama ollama pull mistral:7b
+    security_opt:
+      - no-new-privileges:true
+    # GPU optionnel (décommenter sur hôte NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # ===========================================================================
+  # CADRE — Orchestrateur (optionnel, peut être lancé sur l'hôte)
+  # ===========================================================================
+  cadre:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cadre-orchestrateur
+    restart: "no"  # Lancement manuel via `docker compose run cadre ...`
+    profiles: ["with-orchestrateur"]  # N'est pas lancé par défaut
+    environment:
+      - CADRE_ELASTIC_URL=http://elasticsearch:9200
+      - CADRE_KIBANA_URL=http://kibana:5601
+      - CADRE_OLLAMA_URL=http://ollama:11434
+      # --- Durcissement production (décommenter et adapter) ----------------
+      # Cible / SIEM (aucun secret : simples URLs et hôtes) :
+      # - CADRE_VM_IP=10.0.0.50
+      # - CADRE_INDEX_PATTERN=winlogbeat-*
+      # Transport WinRM (défaut labo : http/5985/ntlm/ignore) :
+      # - CADRE_WINRM_SCHEME=https
+      # - CADRE_WINRM_PORT=5986
+      # - CADRE_WINRM_TRANSPORT=kerberos
+      # - CADRE_WINRM_CERT_VALIDATION=validate
+      # Vérification TLS des appels Elastic/Kibana :
+      # - CADRE_VERIFY_TLS=1
+      # (les mots de passe restent dans le coffre-fort, jamais ici)
+    volumes:
+      - cadre_logs:/app/logs
+      - cadre_rapports:/app/rapports
+      - cadre_home:/home/cadre/.cadre
+    networks:
+      - cadre_net
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    # Pour lancer l'orchestrateur :
+    # docker compose --profile with-orchestrateur up cadre
+
+volumes:
+  cadre_elastic_data:
+    driver: local
+    name: cadre_elastic_data
+  cadre_kibana_data:
+    driver: local
+    name: cadre_kibana_data
+  cadre_ollama_data:
+    driver: local
+    name: cadre_ollama_data
+  cadre_logs:
+    driver: local
+    name: cadre_logs
+  cadre_rapports:
+    driver: local
+    name: cadre_rapports
+  cadre_home:
+    driver: local
+    name: cadre_home
+
+networks:
+  cadre_net:
+    name: cadre_net
+    driver: bridge
+    # Les containers ne sont accessibles QUE depuis l'hôte (127.0.0.1)
+    # et entre eux. Pas d'exposition publique.
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

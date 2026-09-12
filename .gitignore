@@ -1,0 +1,224 @@
+# ============================================
+# CADRE — Fichiers à ignorer par Git
+# ============================================
+
+# === SECRETS (JAMAIS VERSIONNER) ===
+.env
+.env.local
+.env.*.local
+*.env
+secrets.json
+master.key
+.coffre/
+.cadre/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# === PYTHON ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# === ENVIRONNEMENTS VIRTUELS ===
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# === TESTS & COUVERTURE ===
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+
+# === CI LOCAL (make ci) ===
+.secrets-scan.json
+.tox/
+.nox/
+
+# === LOGS (données potentiellement sensibles) ===
+logs/
+*.log
+*.log.*
+logs/*.json
+logs/*.csv
+logs/*.md
+
+# === RAPPORTS D'AUDIT (peuvent contenir des PII) ===
+rapports/*
+!rapports/README.md
+reports/
+audit_*/
+cycle_*/
+
+# === DOCKER ===
+.docker/
+
+# === IDE ===
+.idea/
+.vscode/
+.claude/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+
+# === OS ===
+.directory
+.Trash-*
+.fseventsd
+.Spotlight-V100
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# === FICHIERS DE VERROUILLAGE OFFICE (créés à l'ouverture d'un .pptx/.docx/.xlsx) ===
+~$*
+
+# === ARTEFACTS DE COMPILATION LATEX (générés par pdflatex, jamais la source) ===
+*.aux
+*.lof
+*.lot
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# === DONNÉES DE TEST ===
+test_data/
+test_dumps/
+test_logs/
+fixtures/
+*.pcap
+*.pcapng
+*.dump
+*.raw
+
+# === CACHE & TEMPORAIRES ===
+*.tmp
+*.temp
+*.bak
+*.swp
+*.orig
+.cache/
+.tmp/
+temp/
+
+# === MYPY / BLACK / RUFF ===
+.mypy_cache/
+.ruff_cache/
+.black/
+
+# === JUPYTER ===
+.ipynb_checkpoints
+profile_default/
+IPython/
+*.ipynb_checkpoints/
+
+# === SPHINX (documentation) ===
+# docs/_static/ n'est PAS ignoré : c'est un dossier source (assets réels
+# futurs : logo, CSS custom), pas une sortie générée — contrairement à
+# _build/. Un .gitignore trop large ici annulerait silencieusement tout
+# .gitkeep/asset qu'on y committe.
+docs/_build/
+docs/_templates/
+
+# === NOTES PERSONNELLES ===
+TODO.md
+NOTES.md
+*_privé.md
+*_perso.md
+
+# === SECRETS SUPPLÉMENTAIRES ===
+**/credentials*
+**/secrets*
+**/*.key
+**/*.cert
+**/*.crt
+**/id_rsa*
+**/id_dsa*
+**/id_ecdsa*
+**/id_ed25519*
+**/.gnupg/
+**/.ssh/
+
+# === FICHIERS SPÉCIFIQUES AU PROJET ===
+/data/elastic/
+/data/ollama/
+/data/kibana/
+/work/
+/output/
+/artefacts/
+# Fichiers runtime process-local (jamais versionnés, recréés au démarrage) :
+# PID du daemon (cli.py) et verrou inter-processus de cycle (F-009, orchestrateur.py)
+cadre.pid
+cadre_cycle.lock
+
+# === GÉNÉRÉS PAR LES OUTILS ===
+bandit-report.json
+bandit-report.html
+safety-report.json
+trivy-fs.sarif
+trivy-image.sarif
+snyk-report.json
+*.sarif
+
+# === MCP PLAYWRIGHT (captures/logs de session, jamais versionnés) ===
+.playwright-mcp/
+
+# === ARTEFACTS DE PROCESSUS, NON PUBLIÉS (journal de bord, auto-évaluations,
+# livrables académiques bruts) — restent sur le disque, jamais suivis par git ===
+/NOTE/
+/NOTE2/
+/PRO/
+/EXC/
+/FIX/
+/DEMO/
+/FINAL/
+/AUDIT/
+/AUDIT-DASH/
+/ARCHIVES/
+/LLM/
+/LLM-INV/
+/REVUE/
+/docs-prerequis/
+/docs-soutenance/
+/docs/historique/
+/PLAN/
+/documentation-projet.html
+
+# === CORRESPONDANCE PERSONNELLE (jamais un livrable du projet) ===
+/demande-exclusion-sentinelone*.txt
+/email-admin-sentinelone*.txt

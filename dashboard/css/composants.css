@@ -1,0 +1,1168 @@
+/* ==========================================================================
+   composants.css — Barre système, sections, KPI, matrice ATT&CK, timeline,
+   lanceur, tables, journal, pastilles, états.
+   Élévation par bordure + fond ; l'accent reste réservé marque/action.
+   ========================================================================== */
+
+/* ---- Gabarit ------------------------------------------------------------- */
+.entete-collante {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--surface);
+  border-bottom: var(--bw) solid var(--border);
+}
+/* ---- Barre d'état système ----------------------------------------------- */
+.barre-etat {
+  max-width: var(--largeur-max);
+  margin: 0 auto;
+  height: var(--barre-h);
+  /* Marge gauche réduite (vs droite) : laisse le logo grandir vers la
+     gauche sans repousser le titre CADRE et les pastilles de statut. */
+  padding: 0 var(--sp-6) 0 var(--sp-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+.barre-marque {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex: none;
+}
+.logo-slot {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.logo-repli {
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+/* Séparateur vertical entre le logo et le produit CADRE. */
+.marque-txt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: var(--sp-4);
+  border-left: var(--bw) solid var(--border);
+}
+.marque-nom {
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.1em;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+.marque-auteur {
+  color: var(--ink-3);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+.barre-sous {
+  color: var(--ink-3);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.barre-services {
+  display: flex;
+  gap: var(--sp-2);
+}
+.service {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface-2);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+}
+.service-ico {
+  color: var(--ink-3);
+}
+.service.est-ok {
+  color: var(--ink);
+}
+.service.est-ko {
+  border-color: color-mix(in oklab, var(--st-angle) 40%, var(--border));
+}
+.puce {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+.puce-ok {
+  background: var(--st-valide);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--st-valide) 22%, transparent);
+}
+.puce-ko {
+  background: var(--st-angle);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--st-angle) 22%, transparent);
+}
+.puce-inconnu {
+  background: var(--ink-3);
+}
+
+/* ---- Carte de section ---------------------------------------------------- */
+.carte {
+  background: var(--surface);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  display: grid;
+  gap: var(--sp-4);
+}
+.section-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+.section-titre {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.section-titre h2 {
+  font-size: var(--fs-h2);
+}
+.section-ico {
+  color: var(--accent);
+}
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* ---- KPI ----------------------------------------------------------------- */
+.kpi-grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+}
+/* Squelette de chargement du bandeau KPI (vues/kpi.js) : sans cette règle,
+   la classe posée par le JS n'avait aucun effet -- le seul enfant de
+   `.kpi-grille` (une grille à 4 colonnes) ne s'étalait alors que sur la
+   première colonne, un bloc chatoyant étroit au lieu d'un espace réservé
+   pleine largeur cohérent avec les 4 cartes qui le remplacent ensuite. */
+.squelette-kpi {
+  grid-column: 1 / -1;
+}
+.kpi {
+  padding: var(--sp-4);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface-2);
+  display: grid;
+  gap: var(--sp-1);
+  align-content: start;
+}
+/* .kpi-primaire retiré (3.d) : plus d'accent arbitraire sur une carte —
+   toutes les cartes KPI sont traitées de façon homogène. */
+.kpi-val {
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  color: var(--ink);
+  font-feature-settings: "tnum" 1;
+}
+.kpi-lib {
+  font-size: var(--fs-sm);
+  color: var(--ink);
+}
+.kpi-note {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+
+/* ---- Matrice ATT&CK ------------------------------------------------------ */
+.matrice-resume {
+  color: var(--ink-2);
+  font-size: var(--fs-sm);
+}
+.matrice {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(150px, 1fr);
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: var(--sp-2);
+}
+.mat-col {
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+.mat-col.est-hors {
+  opacity: 0.5;
+}
+.mat-tete {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mat-tac {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+}
+.mat-cpt {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+}
+.mat-cells {
+  display: grid;
+  gap: 4px;
+  padding: var(--sp-2);
+}
+.mat-cell {
+  --c: var(--ink-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  border: var(--bw) solid transparent;
+  border-left: 3px solid var(--c);
+  border-radius: var(--r-sm);
+  background: var(--surface-3);
+  background: color-mix(in oklab, var(--c) 14%, var(--surface-3));
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+.mat-cell:hover {
+  border-color: var(--c);
+  transform: translateX(1px);
+}
+.mat-cell-id {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.mat-cell-nb {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.mat-validee {
+  --c: var(--st-valide);
+}
+.mat-testee {
+  --c: var(--st-rejete);
+}
+.mat-couverte {
+  --c: var(--ink-3);
+}
+.mat-note {
+  padding: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+.mat-angle-note {
+  color: color-mix(in oklab, var(--st-angle) 70%, var(--ink-3));
+}
+.matrice-legende {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.leg-pastille {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border-left: 3px solid var(--c, var(--ink-3));
+  background: color-mix(in oklab, var(--c, var(--ink-3)) 20%, var(--surface-2));
+}
+.leg-pastille.mat-validee {
+  --c: var(--st-valide);
+}
+.leg-pastille.mat-testee {
+  --c: var(--st-rejete);
+}
+.leg-pastille.mat-couverte {
+  --c: var(--ink-3);
+}
+.leg-pastille.mat-angle {
+  --c: var(--st-angle);
+}
+.leg-pastille.mat-hors {
+  --c: var(--st-na);
+}
+
+/* ---- Pastille de statut -------------------------------------------------- */
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.pastille-point {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c, var(--ink-3));
+  flex: none;
+}
+.pastille-txt {
+  color: var(--ink);
+}
+.st-valide {
+  --c: var(--st-valide);
+}
+.st-valide-nd {
+  --c: var(--st-valide-nd);
+}
+.st-rejete {
+  --c: var(--st-rejete);
+}
+.st-angle {
+  --c: var(--st-angle);
+}
+.st-erreur {
+  --c: var(--st-erreur);
+}
+.st-na {
+  --c: var(--st-na);
+}
+.st-encours {
+  --c: var(--st-encours);
+}
+.st-simule {
+  --c: var(--ink-2);
+}
+
+/* ---- Lanceur ------------------------------------------------------------- */
+.lanceur-grille {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: var(--sp-3);
+  align-items: center;
+}
+.champ-mode {
+  display: inline-flex;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.radio-pilule {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  background: var(--surface-2);
+}
+.radio-pilule input {
+  accent-color: var(--accent);
+}
+.radio-pilule:has(input:checked) {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+.champ {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface-2);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  color: var(--ink);
+}
+.champ::placeholder {
+  color: var(--ink-3);
+}
+.champ:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+.confirm-reel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid color-mix(in oklab, var(--st-angle) 40%, var(--border));
+  border-radius: var(--r);
+  background: var(--st-angle-bg);
+  width: fit-content;
+}
+.confirm-reel input {
+  accent-color: var(--st-angle);
+}
+.lanceur-statut {
+  min-height: 20px;
+  font-size: var(--fs-sm);
+}
+.statut-ton {
+  display: inline-flex;
+  align-items: center;
+}
+.statut-info {
+  color: var(--ink-2);
+}
+.statut-ok {
+  color: var(--st-valide);
+}
+.statut-ko {
+  color: var(--st-angle);
+}
+
+/* ---- Boutons ------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r);
+  border: var(--bw) solid transparent;
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease);
+}
+.btn-primaire {
+  background: var(--accent);
+  color: var(--ink-sur-accent);
+}
+.btn-primaire:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.btn-primaire:active:not(:disabled) {
+  background: var(--accent-press);
+}
+.btn-primaire.est-reel {
+  background: var(--st-angle);
+}
+.btn-secondaire {
+  background: var(--surface-2);
+  border-color: var(--border-fort);
+  color: var(--ink);
+}
+.btn-secondaire:hover {
+  border-color: var(--ink-3);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-copier {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  margin-left: var(--sp-1);
+  background: transparent;
+  border: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  border-radius: var(--r-sm);
+}
+.btn-copier:hover {
+  color: var(--ink);
+}
+.btn-copier.est-copie {
+  color: var(--st-valide);
+}
+
+/* ---- Timeline des 9 étapes ----------------------------------------------- */
+.timeline-wrap {
+  overflow-x: auto;
+}
+.timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  min-width: 640px;
+}
+.tl-etape {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  position: relative;
+  text-align: center;
+  padding: 0 var(--sp-1);
+}
+.tl-etape:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+}
+.tl-puce {
+  position: relative;
+  z-index: 1;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 2px solid var(--border-fort);
+  color: var(--ink-3);
+  font-size: var(--fs-xs);
+  font-family: var(--font-mono);
+}
+.tl-nom {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  max-width: 92px;
+}
+/* En cours : chenillard sobre (on n'affirme pas d'étapes terminées non mesurées). */
+.timeline.est-actif .tl-puce {
+  border-color: var(--accent);
+  color: var(--accent);
+  animation: pulse 1.2s var(--ease) infinite;
+}
+.timeline.est-actif .tl-etape:nth-child(2) .tl-puce {
+  animation-delay: 0.13s;
+}
+.timeline.est-actif .tl-etape:nth-child(3) .tl-puce {
+  animation-delay: 0.26s;
+}
+.timeline.est-actif .tl-etape:nth-child(4) .tl-puce {
+  animation-delay: 0.39s;
+}
+.timeline.est-actif .tl-etape:nth-child(5) .tl-puce {
+  animation-delay: 0.52s;
+}
+.timeline.est-actif .tl-etape:nth-child(6) .tl-puce {
+  animation-delay: 0.65s;
+}
+.timeline.est-actif .tl-etape:nth-child(7) .tl-puce {
+  animation-delay: 0.78s;
+}
+.timeline.est-actif .tl-etape:nth-child(8) .tl-puce {
+  animation-delay: 0.91s;
+}
+.timeline.est-actif .tl-etape:nth-child(9) .tl-puce {
+  animation-delay: 1.04s;
+}
+.timeline.est-ok .tl-puce {
+  border-color: var(--st-valide);
+  color: var(--st-valide);
+}
+.timeline.est-ok .tl-etape:not(:last-child)::after {
+  background: color-mix(in oklab, var(--st-valide) 55%, var(--border));
+}
+.timeline.est-erreur .tl-puce {
+  border-color: var(--st-angle);
+  color: var(--st-angle);
+}
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+/* ---- Tables (historique + détail) --------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+}
+.table-cycles th,
+.table-detail th {
+  text-align: left;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: var(--fw-medium);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+.table-cycles td,
+.table-detail td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--border);
+  vertical-align: middle;
+  font-size: var(--fs-sm);
+}
+.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+}
+.ligne-cycle {
+  cursor: pointer;
+}
+.ligne-cycle:hover {
+  background: var(--surface-2);
+}
+.ligne-cycle.est-ouvert {
+  background: var(--surface-3);
+}
+.cycle-h {
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+.cycle-rel {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+}
+.repartition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.rep-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.rep-n {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.cycle-liens {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+.lien-rapport {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px var(--sp-2);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.lien-rapport:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.cycle-detail {
+  display: grid;
+  gap: var(--sp-4);
+}
+.cycle-detail:empty {
+  display: none;
+}
+.detail-entete {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  padding-top: var(--sp-2);
+  border-top: var(--bw) solid var(--border);
+}
+.detail-groupe {
+  display: grid;
+  gap: var(--sp-2);
+}
+.detail-groupe-tete {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.est-surligne {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.ligne-attaque-historique[role="button"] {
+  cursor: pointer;
+}
+.ligne-attaque-historique[role="button"]:hover {
+  background: var(--surface-2);
+}
+.ligne-attaque-historique.est-ouvert-attaque {
+  background: var(--surface-3);
+}
+.cell-raison {
+  color: var(--ink-2);
+  max-width: 380px;
+}
+.muet {
+  color: var(--ink-3);
+}
+
+/* ---- Journal ------------------------------------------------------------- */
+.filtre-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-2);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface-2);
+}
+.filtre-ico {
+  color: var(--ink-3);
+}
+.champ-filtre {
+  border: none;
+  background: transparent;
+  padding: var(--sp-1) var(--sp-1);
+  min-width: 200px;
+}
+.logs-flux {
+  display: grid;
+  gap: 2px;
+  max-height: 340px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+.log-ligne {
+  display: grid;
+  grid-template-columns: 92px 68px 150px 1fr;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-2);
+  border-left: 2px solid transparent;
+  align-items: baseline;
+}
+.log-ligne:hover {
+  background: var(--surface-2);
+}
+.log-ts {
+  color: var(--ink-3);
+}
+.log-niveau {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+}
+.log-type {
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.log-msg {
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+.lvl-err {
+  border-left-color: var(--st-angle);
+}
+.lvl-err .log-niveau {
+  color: var(--st-angle);
+}
+.lvl-warn {
+  border-left-color: var(--st-rejete);
+}
+.lvl-warn .log-niveau {
+  color: var(--st-rejete);
+}
+.lvl-ok {
+  border-left-color: var(--st-valide);
+}
+.lvl-ok .log-niveau {
+  color: var(--st-valide);
+}
+.lvl-info .log-niveau {
+  color: var(--ink-3);
+}
+.lvl-debug {
+  opacity: 0.7;
+}
+
+/* ---- États vide / erreur ------------------------------------------------- */
+.etat-vide,
+.etat-erreur {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-4);
+  color: var(--ink-3);
+  text-align: center;
+}
+.etat-erreur {
+  color: color-mix(in oklab, var(--st-angle) 60%, var(--ink-2));
+}
+.etat-ico {
+  opacity: 0.7;
+}
+
+/* ---- Responsive ---------------------------------------------------------- */
+@media (max-width: 900px) {
+  .kpi-grille {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .lanceur-grille {
+    grid-template-columns: 1fr;
+  }
+  .barre-sous {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Console à onglets (refonte 3.b) — nav latérale + une vue à la fois
+   ========================================================================== */
+.console {
+  max-width: var(--largeur-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 216px 1fr;
+  gap: var(--sp-5);
+  padding: var(--sp-5) var(--sp-6) var(--sp-12);
+  align-items: start;
+}
+.nav-onglets {
+  position: sticky;
+  top: calc(var(--barre-h) + var(--sp-4));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.onglet {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid transparent;
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--fs-sm);
+  /* Aucun poids n'était défini avant (défaut navigateur 400) — gras marqué
+     pour les noms d'onglets, alignés sur la référence officielle. */
+  font-weight: var(--fw-bold);
+}
+.onglet:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.onglet.est-actif {
+  background: var(--surface-2);
+  color: var(--ink);
+  border-color: var(--border);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.onglet-ico {
+  color: var(--ink-3);
+  flex: none;
+}
+.onglet.est-actif .onglet-ico {
+  color: var(--accent);
+}
+.app-contenu {
+  min-width: 0;
+}
+.app-contenu:focus {
+  outline: none;
+}
+.vue {
+  display: grid;
+  gap: var(--sp-6);
+}
+
+/* ---- Progression RÉELLE de la timeline (3.c) ---------------------------- */
+.tl-etape.est-fait .tl-puce {
+  border-color: var(--st-valide);
+  color: var(--st-valide);
+}
+.tl-etape.est-fait:not(:last-child)::after {
+  background: color-mix(in oklab, var(--st-valide) 55%, var(--border));
+}
+.tl-etape.est-courant .tl-puce {
+  border-color: var(--accent);
+  color: var(--accent);
+  animation: pulse 1.2s var(--ease) infinite;
+}
+.tl-etape.est-echec .tl-puce {
+  border-color: var(--st-angle);
+  color: var(--st-angle);
+}
+
+/* ---- Jauges & barres de progression ------------------------------------ */
+.jauges {
+  display: grid;
+  gap: var(--sp-4);
+}
+.jauge-tete {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: 4px;
+  font-size: var(--fs-sm);
+}
+.jauge-lib {
+  color: var(--ink);
+}
+.jauge-val {
+  color: var(--ink-2);
+}
+.barre-piste {
+  height: 8px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.barre-remplie {
+  height: 100%;
+  width: 0;
+  background: var(--st-valide);
+  border-radius: 999px;
+  transition: width var(--t-slow) var(--ease);
+}
+.barre-remplie.encours {
+  background: var(--accent);
+}
+/* Largeurs 100% CSP-safe (aucun style inline) : classes par pas de 5%. */
+.w0 { width: 0; } .w5 { width: 5%; } .w10 { width: 10%; } .w15 { width: 15%; }
+.w20 { width: 20%; } .w25 { width: 25%; } .w30 { width: 30%; } .w35 { width: 35%; }
+.w40 { width: 40%; } .w45 { width: 45%; } .w50 { width: 50%; } .w55 { width: 55%; }
+.w60 { width: 60%; } .w65 { width: 65%; } .w70 { width: 70%; } .w75 { width: 75%; }
+.w80 { width: 80%; } .w85 { width: 85%; } .w90 { width: 90%; } .w95 { width: 95%; }
+.w100 { width: 100%; }
+
+/* ---- Bannière de cycle en cours (Vue d'ensemble) ----------------------- */
+.banniere-cycle {
+  background: var(--surface-2);
+  border: var(--bw) solid color-mix(in oklab, var(--accent) 30%, var(--border));
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+}
+.banniere-tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.banniere-detail {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+/* ---- Dernier cycle (Vue d'ensemble) ------------------------------------ */
+.dernier-tete {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  margin-bottom: var(--sp-3);
+}
+.aide {
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-2);
+}
+
+/* ---- Onglet Système ---------------------------------------------------- */
+.sante-liste,
+.secrets-liste {
+  display: grid;
+  gap: 2px;
+}
+.sante-item,
+.secret-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--border);
+  font-size: var(--fs-sm);
+}
+.sante-nom,
+.secret-cle {
+  min-width: 170px;
+  color: var(--ink);
+}
+.sante-detail,
+.secret-lib {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.secret-etat {
+  margin-left: auto;
+  color: var(--ink-2);
+  font-size: var(--fs-xs);
+}
+.btn-secret-toggle {
+  background: transparent;
+  border: var(--bw) solid var(--border-fort);
+  border-radius: var(--r-sm);
+  padding: var(--sp-1) var(--sp-2);
+  margin-left: var(--sp-2);
+  color: var(--ink-2);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+.btn-secret-toggle:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.secret-item-edition {
+  flex-wrap: wrap;
+}
+.champ-secret {
+  flex: 1;
+  min-width: 160px;
+  width: auto;
+}
+.secret-retour {
+  font-size: var(--fs-xs);
+}
+.secret-retour.est-ok {
+  color: var(--st-valide);
+}
+.secret-retour.est-ko {
+  color: var(--st-angle);
+}
+.badge-opt,
+.badge-crit {
+  font-size: var(--fs-xs);
+  padding: 1px 7px;
+  border-radius: 999px;
+  flex: none;
+}
+.badge-opt {
+  background: var(--surface-3);
+  color: var(--ink-3);
+}
+.badge-crit {
+  background: var(--st-angle-bg);
+  color: var(--st-angle);
+}
+
+/* ---- Responsive : nav en haut sur petit écran -------------------------- */
+@media (max-width: 860px) {
+  .console {
+    grid-template-columns: 1fr;
+  }
+  .nav-onglets {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-x: auto;
+  }
+}
+
+/* ---- Pied de page (copyright) ------------------------------------------ */
+.pied-page {
+  max-width: var(--largeur-max);
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-6) var(--sp-8);
+  border-top: var(--bw) solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--ink-3);
+  font-size: var(--fs-xs);
+}
+.pied-copy {
+  color: var(--ink-2);
+}
+.pied-sep {
+  color: var(--border-fort);
+}
+.pied-statut {
+  /* Force sa propre ligne dans le pied de page (flex-wrap) — hérite déjà
+     --ink-3/--fs-xs de .pied-page, discret par construction. */
+  flex-basis: 100%;
+}
+
+/* ---- Catalogue (fiche attaque) ------------------------------------------ */
+.lien-attaque {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--ink);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.lien-attaque:hover,
+.lien-attaque:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.attaque-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+.attaque-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.attaque-payload {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface-2);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  max-height: 240px;
+  overflow-y: auto;
+  flex: 1;
+}
+.payload-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+.attaque-lancement .lanceur-grille {
+  grid-template-columns: auto 1fr;
+}
+
+/* ---- Découverte IA -------------------------------------------------------- */
+.decouverte-desc {
+  min-height: 72px;
+  resize: vertical;
+  margin-bottom: var(--sp-3);
+}
+.decouverte-grille {
+  grid-template-columns: 1fr auto auto;
+}
+.decouverte-liste {
+  display: grid;
+  gap: var(--sp-2);
+}
+.decouverte-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}

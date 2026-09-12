@@ -1,0 +1,24 @@
+title: Query Registry (reg query clé Run)
+id: 34a4c77d-cd18-4f91-8af7-a0e210a92d33
+status: experimental
+description: |
+  Interroge la clé de démarrage automatique via reg query (repérage de persistance).
+references:
+  - https://attack.mitre.org/techniques/T1012/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1012
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'query HKLM\Software\Microsoft\Windows\CurrentVersion\Run'
+  condition: selection
+falsepositives:
+  - Outils de dépannage
+  - Inventaire logiciel
+level: low

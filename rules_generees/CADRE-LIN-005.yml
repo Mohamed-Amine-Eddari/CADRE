@@ -1,0 +1,23 @@
+title: System Information Discovery (uname/os-release)
+id: 163d7253-f7ba-4dfe-8346-4e7fc37fe21e
+status: experimental
+description: |
+  Collecte les informations système Linux (noyau, distribution).
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'uname -a'
+  condition: selection
+falsepositives:
+  - Inventaire système légitime
+  - Scripts d'administration
+level: low

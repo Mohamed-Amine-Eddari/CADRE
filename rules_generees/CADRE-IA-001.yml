@@ -1,0 +1,23 @@
+title: ClickFix Fausse Verification CAPTCHA
+id: 1546922d-386a-433d-a73f-75695cb07c34
+status: experimental
+description: |
+  L'attaque utilise une page web falsifiée pour détourner l'utilisateur en exécutant un processus malveillant via la boîte de dialogue Exécuter.
+references:
+  - https://attack.mitre.org/techniques/T1204/004/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.execution
+  - attack.t1204_004
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'CADRE_IA001_CLICKFIX_TEST'
+  condition: selection
+falsepositives:
+  - Aucun connu
+level: low

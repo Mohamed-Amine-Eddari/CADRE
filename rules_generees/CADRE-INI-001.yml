@@ -1,0 +1,23 @@
+title: Accès initial via service distant exposé (WinRM depuis Kali)
+id: 782d5859-fa06-4cc8-b8eb-0e1e8c3e87a8
+status: experimental
+description: |
+  Depuis la VM Kali, s'authentifie en WinRM du premier coup avec un identifiant DÉJÀ valide (pas de deviné) contre un compte de test dédié -- émule l'usage d'un service distant exposé comme vecteur d'accès initial, distinct de l'obtention de l'identifiant (CADRE-CRE-006).
+references:
+  - https://attack.mitre.org/techniques/T1133/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.initial_access
+  - attack.t1133
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    winlog.event_data.TargetUserName|contains: 'CadreIniAccessTest'
+  condition: selection
+falsepositives:
+  - Un opérateur humain se connecte manuellement avec ce compte de test
+level: medium

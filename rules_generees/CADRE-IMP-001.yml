@@ -1,0 +1,24 @@
+title: File deletion test (test safe)
+id: d051922c-1296-472b-9f07-fdaa4a1914de
+status: experimental
+description: |
+  Crée puis supprime un fichier de test pour valider la détection d'activité de suppression suspecte.
+references:
+  - https://attack.mitre.org/techniques/T1070/004/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.defense_evasion
+  - attack.t1070_004
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventID: 4104
+    ScriptBlockText|contains: 'CADRE_TEST_FILE'
+  condition: selection
+falsepositives:
+  - Cleanup scripts
+  - Installer temp cleanup
+level: low

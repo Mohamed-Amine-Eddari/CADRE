@@ -1,0 +1,24 @@
+title: HTTP Request Outbound (curl)
+id: 72aed1c1-8442-4211-b944-221681f46972
+status: experimental
+description: |
+  Effectue un curl sortant pour détecter les communications HTTP C2 de base.
+references:
+  - https://attack.mitre.org/techniques/T1071/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.command_and_control
+  - attack.t1071_001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'example.com'
+  condition: selection
+falsepositives:
+  - Health checks
+  - Update clients
+level: low

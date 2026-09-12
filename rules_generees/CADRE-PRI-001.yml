@@ -1,0 +1,24 @@
+title: UAC Bypass via détournement de registre (fodhelper)
+id: 81a677f0-88b1-4e8f-9eb2-87f37a2cdf50
+status: experimental
+description: |
+  Crée puis retire une clé de registre imitant la technique de contournement UAC via fodhelper.exe. N'exécute PAS réellement fodhelper — teste uniquement la détection de l'artefact registre.
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.privilege_escalation
+  - attack.t1548_002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'ms-settings\Shell\Open\command'
+  condition: selection
+falsepositives:
+  - Outils de configuration Windows Settings
+  - GPO de personnalisation du shell
+level: medium

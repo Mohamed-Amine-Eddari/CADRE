@@ -1,0 +1,23 @@
+title: Data from Local System (copie de fichier)
+id: b8c77121-52a8-4720-8081-533f25ebb136
+status: experimental
+description: |
+  Copie un fichier système vers /tmp puis le supprime (collecte).
+references:
+  - https://attack.mitre.org/techniques/T1005/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.collection
+  - attack.t1005
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'CADRE_LIN_COLLECT'
+  condition: selection
+falsepositives:
+  - Sauvegarde
+  - Synchronisation de fichiers
+level: low

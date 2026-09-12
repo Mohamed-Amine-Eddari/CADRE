@@ -1,0 +1,29 @@
+title: CADRE — {nom}
+id: {id_kebab}
+status: experimental
+description: |
+  Règle générée automatiquement par CADRE à partir du catalogue.
+  Technique MITRE ATT&CK : {technique_mitre} ({tactique_mitre})
+  Description : {description}
+author: CADRE Orchestrator
+date: {date}
+modified: {date}
+references:
+  {references_yaml}
+logsource:
+  product: windows
+  service: {service}
+detection:
+  selection:
+    EventID:
+      - {event_ids_yaml}
+    {champ_principal}|contains: '{commande_echappee}'
+  condition: selection
+falsepositives:
+  {faux_positifs_yaml}
+level: {niveau_risque_lower}
+tags:
+  - attack.{tactique_mitre_lower}
+  - attack.{technique_mitre_lower}
+  - cadre.auto
+  - cadre.v1

@@ -1,0 +1,129 @@
+/* ==========================================================================
+   CADRE — Jetons de design (design tokens)
+   Identité CADRE originale · thème SOC sombre par défaut
+   --------------------------------------------------------------------------
+   Ce fichier ne contient QUE des variables (custom properties). Aucune règle
+   visuelle : base.css et composants.css les consomment. Toute couleur, toute
+   mesure et toute durée de l'interface descend d'ici — une seule source de
+   vérité, modifiable sans toucher aux composants.
+
+   Règle d'or : l'accent de marque (--accent) est réservé à la MARQUE et
+   aux ACTIONS PRIMAIRES. Il ne décore jamais. Le sens (succès / rejet / angle
+   mort) passe TOUJOURS par la palette sémantique de statut, jamais par
+   l'accent.
+   ========================================================================== */
+
+:root {
+  /* ---- Accent de marque CADRE --------------------------------------- */
+  --accent: #00c2a8; /* cyan/teal — marque + action primaire */
+  --accent-hover: #00a38c;
+  --accent-press: #007a69; /* dérivé pour l'état :active */
+  --cadre-black: #000000;
+  --cadre-white: #ffffff;
+
+  /* ---- Canvas sombre (poste de pilotage SOC) ---------------------------- */
+  /* Noir pur — thème « centre d'opérations », pas de bleu nuit générique
+     « dashboard IA ». */
+  --bg: #000000; /* fond de page */
+  --surface: #000000; /* cartes, barres, panneaux — identique à --bg : élimine tout écart de teinte avec le logo (fond noir plein) */
+  --surface-2: #141414; /* surfaces surélevées / lignes alternées / champs */
+  --surface-3: #1c1c1c; /* survol de ligne, en-têtes de table */
+  --border: #2a2a2a; /* filet standard (élévation par bordure, pas par ombre) */
+  --border-fort: #3a3a3a; /* séparateur marqué, bordure de focus non-primaire */
+
+  /* ---- Encre (texte) — contraste AA vérifié sur --surface --------------- */
+  --ink: #ffffff; /* texte principal        (≈ 18:1 sur --surface) */
+  --ink-2: #a8a8a8; /* texte secondaire       (≈ 6.7:1 sur --surface) */
+  --ink-3: #6e6e6e; /* texte tertiaire / hint (≈ 3.2:1 → gros/non-essentiel) */
+  --ink-sur-accent: #000000; /* texte posé sur un aplat d'accent (AA sur #00c2a8) */
+
+  /* ---- Sémantique de STATUT (les 6 statuts finaux du pipeline) ---------- */
+  /* Couleur = statut. Ces teintes ne servent qu'à ça. */
+  --st-valide: #4caf6d; /* VALIDE             — vert plein   */
+  --st-valide-nd: #8fbf7a; /* VALIDE_NON_DEPLOYE — vert atténué */
+  --st-rejete: #ff9f1c; /* REJETE             — ambre        */
+  --st-angle: #e53935; /* ANGLE_MORT         — rouge        */
+  --st-erreur: #9e9e9e; /* ERREUR             — gris neutre  */
+  --st-na: #5a5a5a; /* NON_APPLICABLE     — gris atténué */
+  --st-encours: #00c2a8; /* EN_COURS           — accent (action/vivant) */
+
+  /* Fonds « teintés » discrets pour pastilles/badges de statut (sur sombre).
+     Aplat très sombre de la teinte, pour un point coloré lisible sans crier. */
+  --st-valide-bg: #12281c;
+  --st-valide-nd-bg: #1d2a17;
+  --st-rejete-bg: #2e2109;
+  --st-angle-bg: #2e1211;
+  --st-erreur-bg: #202020;
+  --st-na-bg: #181818;
+
+  /* ---- Typographie ------------------------------------------------------ */
+  /* Pile système uniquement — pas de police décorative téléchargée. */
+  --font-sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, sans-serif;
+  /* Chasse fixe = valeur TECHNIQUE (T-id, Lucene, Sigma, EventID, ports,
+     timings). */
+  --font-mono: ui-monospace, "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+
+  /* Échelle typographique (rythme discret, densité SOC assumée) */
+  --fs-display: 2rem; /* 32px — grands chiffres KPI              */
+  --fs-h1: 1.375rem; /* 22px — titre de vue                     */
+  --fs-h2: 1.125rem; /* 18px — titre de section                 */
+  --fs-body: 0.875rem; /* 14px — corps par défaut                 */
+  --fs-sm: 0.8125rem; /* 13px — libellés, cellules denses        */
+  --fs-xs: 0.6875rem; /* 11px — méta, notes contextuelles, sur-titres */
+
+  --lh-tight: 1.15; /* titres, chiffres                        */
+  --lh-body: 1.5; /* texte courant                           */
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+  --ls-caps: 0.06em; /* interlettrage des sur-titres en capitales */
+
+  /* ---- Espacement — grille stricte de 4 px ------------------------------ */
+  --sp-0: 0;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* ---- Rayons (discrets) & filets --------------------------------------- */
+  --r-sm: 2px;
+  --r: 4px; /* rayon par défaut */
+  --r-lg: 6px;
+  --bw: 1px; /* épaisseur de filet standard */
+
+  /* ---- Élévation — par bordure + fond, PAS par ombre floue --------------- */
+  /* Ombres réservées à l'exception (menu/overlay flottant), jamais partout. */
+  --elev-overlay: 0 8px 24px rgba(0, 0, 0, 0.55);
+
+  /* ---- Mouvement — sobre (respecte prefers-reduced-motion dans base.css)   */
+  --t-fast: 120ms;
+  --t: 150ms; /* transition par défaut */
+  --t-slow: 240ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ---- Focus (accessibilité — toujours visible) ------------------------- */
+  --focus-ring: 2px solid var(--accent);
+  --focus-offset: 2px;
+
+  /* ---- Couches (z-index) ------------------------------------------------- */
+  --z-base: 0;
+  --z-sticky: 100; /* barre d'état / en-tête collants */
+  --z-overlay: 1000; /* tooltip, menu */
+  --z-modal: 2000; /* confirmation de cycle réel */
+
+  /* ---- Gabarit ----------------------------------------------------------- */
+  --largeur-max: 1440px; /* densité d'outil, pas de pleine page infinie */
+  --barre-h: 60px; /* hauteur de la barre d'en-tête (logo + marque + services) */
+}
+
+/* Confort de lecture des valeurs techniques : liga off, tabular figures pour
+   aligner les colonnes de chiffres (timings, FP, EventID). */
+:root {
+  --mono-features: "tnum" 1, "liga" 0;
+}

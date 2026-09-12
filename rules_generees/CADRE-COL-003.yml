@@ -1,0 +1,24 @@
+title: Local Data Staging (regroupement avant exfiltration)
+id: d47313b7-ba00-40dc-b20d-9ef41f25cc0b
+status: experimental
+description: |
+  Crée un répertoire de rassemblement, y copie un fichier système bénin puis nettoie — simule la mise en scène locale de données.
+references:
+  - https://attack.mitre.org/techniques/T1074/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.collection
+  - attack.t1074_001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'CADRE_STAGE'
+  condition: selection
+falsepositives:
+  - Scripts de sauvegarde
+  - Synchronisation de fichiers
+level: low

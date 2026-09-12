@@ -1,0 +1,23 @@
+title: System Service Discovery (systemctl)
+id: 09af9d8b-777f-40fd-b825-f932d9ed94c4
+status: experimental
+description: |
+  Liste les services systemd via systemctl.
+references:
+  - https://attack.mitre.org/techniques/T1007/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1007
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'systemctl list-units'
+  condition: selection
+falsepositives:
+  - Administration système
+  - Supervision
+level: low

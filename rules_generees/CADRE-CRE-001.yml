@@ -1,0 +1,25 @@
+title: Dump SAM registry hive
+id: 04ed457a-f236-4b49-a6c8-d3043ed50e1e
+status: experimental
+description: |
+  Sauvegarde la ruche SAM pour simuler un accès aux credentials. Ne lit PAS le contenu, juste l'export.
+references:
+  - https://attack.mitre.org/techniques/T1003/002/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1003_002
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: 'save HKLM\SAM'
+  condition: selection
+falsepositives:
+  - Backup software
+  - Sysprep automation
+  - Forensics tools legit
+level: high

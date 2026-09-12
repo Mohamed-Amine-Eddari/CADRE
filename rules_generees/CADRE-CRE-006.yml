@@ -1,0 +1,23 @@
+title: Brute force WinRM depuis Kali (échecs puis authentification réussie)
+id: 63b64c56-69b6-47f8-aca5-dcb5e38c2910
+status: experimental
+description: |
+  Depuis la VM Kali, tente plusieurs authentifications WinRM avec un mauvais mot de passe puis le bon, contre un compte de test dédié -- brute force réseau réel (pas une commande locale à la cible), preuve portée par la réussite finale.
+references:
+  - https://attack.mitre.org/techniques/T1110/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1110_001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    winlog.event_data.TargetUserName|contains: 'CadreBruteTest'
+  condition: selection
+falsepositives:
+  - Un opérateur humain se connecte manuellement avec ce compte de test
+level: medium

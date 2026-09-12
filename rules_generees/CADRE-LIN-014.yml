@@ -1,0 +1,22 @@
+title: Permission Groups Discovery (/etc/group)
+id: 1009aafc-ae44-44d8-954a-5ef42ae776cf
+status: experimental
+description: |
+  Énumère les groupes locaux via /etc/group.
+references:
+  - https://attack.mitre.org/techniques/T1069/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.discovery
+  - attack.t1069_001
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'cat /etc/group'
+  condition: selection
+falsepositives:
+  - Audit des droits légitime
+level: low

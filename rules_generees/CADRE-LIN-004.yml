@@ -1,0 +1,23 @@
+title: Recherche de credentials en clair (Linux)
+id: 1391013b-7f9c-4010-bed4-06ea7e73a869
+status: experimental
+description: |
+  Recherche le mot 'password' dans les fichiers d'un répertoire temporaire Linux — variante Unix de la recherche de credentials en clair.
+references:
+  - https://attack.mitre.org/techniques/T1552/001/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1552_001
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    process.title|contains: 'grep -ril password'
+  condition: selection
+falsepositives:
+  - Scripts d'audit de sécurité
+  - Outils de compliance (Lynis, OpenSCAP)
+level: low

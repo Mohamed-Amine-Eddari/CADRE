@@ -1,0 +1,24 @@
+title: Recherche de clés privées (Private Keys)
+id: a0f1a01f-8036-4196-a89f-83dc77c99875
+status: experimental
+description: |
+  Recherche récursivement des fichiers de clés privées (*.pem, *.key, *.ppk) dans l'arborescence utilisateur.
+references:
+  - https://attack.mitre.org/techniques/T1552/004/
+author: CADRE PFA
+date: 2026/09/08
+tags:
+  - attack.credential_access
+  - attack.t1552_004
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    EventID: 1
+    CommandLine|contains: '*.pem,*.key,*.ppk'
+  condition: selection
+falsepositives:
+  - Audit de sécurité
+  - Outils de gestion de certificats
+level: medium
