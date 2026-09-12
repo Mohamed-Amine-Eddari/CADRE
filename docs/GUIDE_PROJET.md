@@ -147,32 +147,27 @@ systématiquement ces données avant traitement ou stockage long terme
 
 ## 3. Architecture d'ensemble
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│  Hôte (Windows/Linux) — Docker Compose                          │
-│                                                                    │
-│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│   │ Elasticsearch│←→│    Kibana    │  │    Ollama    │          │
-│   │  port 9200   │  │  port 5601   │  │ port 11434   │          │
-│   │  (index)     │  │ (alertes)    │  │ (assistant   │          │
-│   │              │  │              │  │  IA, optionnel)│         │
-│   └──────┬───────┘  └──────┬───────┘  └──────────────┘          │
-│          │  requêtes REST   │  déploiement règles                │
-│          │                  │                                    │
-│   ┌──────┴──────────────────┴─────────────────────────────┐     │
-│   │        Orchestrateur CADRE (Python, ce dépôt)         │     │
-│   │  catalogue → WinRM → indexation → anonymisation →     │     │
-│   │  Sigma → compilation → validation TP/FP → déploiement │     │
-│   └──────────────────────┬──────────────────────────────┘     │
-└──────────────────────────┼─────────────────────────────────────┘
-                            │ WinRM (port 5985)
-                            ▼
-        ┌────────────────────────────────────────┐
-        │  VM Windows cible (Host-Only network)   │
-        │  • Sysmon (télémétrie)                  │
-        │  • Winlogbeat (envoi vers Elasticsearch) │
-        │  • Firewall/Defender désactivés (labo)   │
-        └────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph HOTE["Hôte (Windows/Linux) — Docker Compose"]
+        direction LR
+        ES["Elasticsearch<br>port 9200<br>(index)"]
+        KIB["Kibana<br>port 5601<br>(alertes)"]
+        OLL["Ollama<br>port 11434<br>(assistant IA, optionnel)"]
+        ES <-->|requêtes REST| KIB
+    end
+    ORCH["Orchestrateur CADRE (Python, ce dépôt)<br>catalogue → WinRM → indexation → anonymisation →<br>Sigma → compilation → validation TP/FP → déploiement"]
+    ES -.->|déploiement règles| ORCH
+    KIB -.->|déploiement règles| ORCH
+    HOTE --- ORCH
+
+    ORCH -->|"WinRM · port 5985"| VM
+
+    subgraph VM["VM Windows cible (Host-Only network)"]
+        SYS["Sysmon — télémétrie"]
+        WLB["Winlogbeat — envoi vers Elasticsearch"]
+        FW["Firewall/Defender désactivés (labo)"]
+    end
 ```
 
 **Points importants** :
@@ -713,14 +708,12 @@ CADRE/
 ├── .env.example, .gitignore, .pre-commit-config.yaml
 ├── .github/                                     # CI + templates d'issues
 ├── src/cadre/                                   # le code (23 modules, section 5)
-├── tests/                                       # 1148 tests (section 8)
+├── tests/                                       # 1168 tests (section 8)
 ├── docs/
 │   ├── GUIDE_PROJET.md                          # CE FICHIER
 │   ├── ARCHITECTURE.md, INSTALL.md, SECURITY.md,
 │   │   THREAT_MODEL.md, WHITE_PAPER.md          # documentation produit
-│   ├── api/                                     # doc API (Sphinx)
-│   └── historique/                              # archives des sessions passées
-│       (CONTEXT_HANDOFF.md, GUIDE_TRANSFER.md, guides HTML...)
+│   └── api/                                     # doc API (Sphinx)
 ├── site/                                        # page web de présentation
 ├── rapports/                                    # sorties générées par `cadre cycle` (vide au repos, gitignored)
 ├── rules_generees/                              # règles Sigma générées, conservées comme exemples
