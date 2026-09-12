@@ -108,6 +108,18 @@ même si le SOC/MITRE ATT&CK/Sigma vous sont inconnus.
 
 ---
 
+## Captures d'écran
+
+<p align="center">
+  <img src="docs/_static/captures/dashboard-vue-ensemble.png" alt="Vue d'ensemble du dashboard CADRE" width="90%">
+</p>
+
+<p align="center">
+  <img src="docs/_static/captures/connexion.png" alt="Page de connexion du dashboard CADRE" width="45%">
+</p>
+
+---
+
 ## Comment ça marche — vue d'ensemble du pipeline
 
 ```mermaid
