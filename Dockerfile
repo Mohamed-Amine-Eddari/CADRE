@@ -9,7 +9,7 @@
 # ===========================================
 # Stage 1 : Builder (installation des deps)
 # ===========================================
-FROM python:3.13-slim AS builder
+FROM python:3.14-slim AS builder
 
 LABEL maintainer="Mohamed Amine EDDARI <eddarimedamine@gmail.com>"
 LABEL description="CADRE — Continuous Adversary-Driven Rule Engineering"
@@ -48,7 +48,7 @@ RUN pip install --user --no-cache-dir .
 # ===========================================
 # Stage 2 : Runtime (image finale légère)
 # ===========================================
-FROM python:3.13-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
