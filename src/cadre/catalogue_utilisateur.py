@@ -231,8 +231,11 @@ def charger_attaques_utilisateur(
         # chemin à l'écriture (protection contre `repertoire_regles /
         # f"{id}.yml"` qui sort de son dossier), mais ce fichier reste
         # modifiable hors de cette fonction -- revérifié ici pour la même
-        # raison que le filtre anti-commande juste au-dessus.
-        if Path(attaque.id).name != attaque.id or attaque.id in (".", ".."):
+        # raison que le filtre anti-commande juste au-dessus. Détection
+        # explicite des deux séparateurs (voir le commentaire détaillé sur
+        # `enregistrer_attaque_utilisateur` : `Path(...).name` seul ratait
+        # les backslashes sous Linux).
+        if any(sep in attaque.id for sep in ("/", "\\")) or attaque.id in (".", ".."):
             obtenir_logger().warn(f"Attaque perso ignorée (id invalide) : {attaque.id!r}")
             continue
         attaques.append(attaque)
@@ -282,12 +285,14 @@ def enregistrer_attaque_utilisateur(
     # `repertoire_regles`. Vecteur concret : un dépôt Atomic Red Team
     # importé (`atomic_vers_brouillon` dérive l'id du champ YAML
     # `attack_technique`, une source explicitement non fiable) pourrait
-    # forger un id de ce type. `Path(attaque.id).name` isole le dernier
-    # composant : différent de l'id d'origine si celui-ci contient un
-    # séparateur de chemin. Cas à part : `attaque.id == ".."` a pour `.name`
-    # ".." lui-même (pathlib ne le réduit pas), donc ce test seul ne le
-    # rejette pas -- vérifié par échec réel du test avant cet ajout.
-    if Path(attaque.id).name != attaque.id or attaque.id in (".", ".."):
+    # forger un id de ce type. Détection par recherche explicite des DEUX
+    # séparateurs plutôt que `Path(attaque.id).name` : `pathlib.Path` ne
+    # reconnaît `\` comme séparateur que sous Windows (`WindowsPath`) --
+    # sous Linux (`PosixPath`, donc la CI), `Path("..\\..\\evil").name`
+    # renvoie la chaîne entière inchangée et laissait passer un id contenant
+    # des backslashes, trouvé par échec réel de ce test en CI Linux alors
+    # que tout passait en local Windows.
+    if any(sep in attaque.id for sep in ("/", "\\")) or attaque.id in (".", ".."):
         raise ErreurCatalogueUtilisateur(
             f"Identifiant {attaque.id!r} invalide — ne doit contenir aucun séparateur " "de chemin."
         )
