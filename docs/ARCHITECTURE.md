@@ -17,63 +17,34 @@ cerveau central qui orchestre leur interaction. La conception privilégie :
 
 ## Diagramme des composants
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                            ZONE 1 — ORCHESTRATEUR                    │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  Python 3.13 (src/cadre/)                                    │    │
-│  │                                                              │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │    │
-│  │  │  catalogue_  │→ │ orchestrateur│→ │  rapport.py  │       │    │
-│  │  │  attaques.py │  │     .py      │  │  (Markdown)  │       │    │
-│  │  └──────────────┘  └──────┬───────┘  └──────────────┘       │    │
-│  │                            │                                │    │
-│  │  ┌─────────────────────────┴────────────────────────────┐   │    │
-│  │  │   Modules transverses                                │   │    │
-│  │  │   • coffre_fort.py   (credentials sécurisés)         │   │    │
-│  │  │   • anonymisation.py (RGPD-by-design)                │   │    │
-│  │  │   • logger.py        (JSON structuré)                │   │    │
-│  │  │   • attente_indexation.py (polling Elastic)          │   │    │
-│  │  │   • compilation_sigma.py (Sigma → Lucene + TP/FP)    │   │    │
-│  │  └─────────────────────────────────────────────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-│                                                                      │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  Docker Compose                                             │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │    │
-│  │  │ Elasticsearch│  │    Kibana    │  │   Ollama     │      │    │
-│  │  │  8.13.0      │  │   8.13.0     │  │  (LLM local) │      │    │
-│  │  │  Port 9200   │  │  Port 5601   │  │  Port 11434  │      │    │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘      │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-└──────────────────────┬───────────────────────────────────────────────┘
-                       │ WinRM (port 5985)
-                       │ (credentials via coffre-fort)
-                       ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                  ZONE 2 — CIBLE (VM Windows 10)                      │
-│  ┌────────────────────────────────────────────────────────────┐    │
-│  │  Windows 10 (6 Go RAM, 2 cores)                            │    │
-│  │  • Sysmon 15.x  (config SwiftOnSecurity)                   │    │
-│  │  • Winlogbeat 8.x  (→ Zone 1)                              │    │
-│  │  • Firewall + Defender DÉSACTIVÉS (par design)             │    │
-│  │  • Utilisateur "CadreUser"  (admin local)                  │    │
-│  └────────────────────────────────────────────────────────────┘    │
-└──────────────────────┬───────────────────────────────────────────────┘
-                       │ Réseau Host-Only 192.168.56.0/24
-                       │ (optionnel — Kali pour l'offensive)
-                       ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│              ZONE 3 — ATTAQUANT (Kali Linux)                        │
-│  ┌────────────────────────────────────────────────────────────┐    │
-│  │  Kali Linux (16 Go RAM) -- aussi la cible du catalogue      │    │
-│  │  Linux (Plateforme.LINUX, auditd/Auditbeat)                 │    │
-│  │  • netexec (brute force réseau contre la cible Windows)     │    │
-│  │  • Metasploit, Sliver C2, Atomic Red Team                   │    │
-│  │  • WinRM client                                             │    │
-│  │  • Même réseau Host-Only que la cible                       │    │
-│  └────────────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Z1["Zone 1 — Orchestrateur"]
+        subgraph PY["Python 3.13 (src/cadre/)"]
+            direction LR
+            CAT["catalogue_attaques.py"] --> ORCH2["orchestrateur.py"] --> RAP["rapport.py<br>(Markdown)"]
+            TRANS["Modules transverses<br>• coffre_fort.py (credentials sécurisés)<br>• anonymisation.py (RGPD-by-design)<br>• logger.py (JSON structuré)<br>• attente_indexation.py (polling Elastic)<br>• compilation_sigma.py (Sigma → Lucene + TP/FP)"]
+            ORCH2 --- TRANS
+        end
+        subgraph DC["Docker Compose"]
+            direction LR
+            ES2["Elasticsearch 8.13.0<br>Port 9200"]
+            KIB2["Kibana 8.13.0<br>Port 5601"]
+            OLL2["Ollama (LLM local)<br>Port 11434"]
+        end
+    end
+
+    Z1 -->|"WinRM · port 5985<br>credentials via coffre-fort"| Z2
+
+    subgraph Z2["Zone 2 — Cible (VM Windows 10)"]
+        WINBOX["Windows 10 — 6 Go RAM, 2 cores<br>• Sysmon 15.x (config SwiftOnSecurity)<br>• Winlogbeat 8.x → Zone 1<br>• Firewall + Defender DÉSACTIVÉS (par design)<br>• Utilisateur « CadreUser » (admin local)"]
+    end
+
+    Z2 -->|"Réseau Host-Only 192.168.56.0/24<br>(optionnel — Kali pour l'offensive)"| Z3
+
+    subgraph Z3["Zone 3 — Attaquant (Kali Linux)"]
+        KALIBOX["Kali Linux — 16 Go RAM — aussi cible du catalogue<br>(Plateforme.LINUX, auditd/Auditbeat)<br>• netexec (brute force réseau vers la cible Windows)<br>• Metasploit, Sliver C2, Atomic Red Team<br>• WinRM client<br>• Même réseau Host-Only que la cible"]
+    end
 ```
 
 Historiquement cette zone n'était qu'un diagramme sans code correspondant
@@ -117,88 +88,29 @@ des **sources d'attaques additionnelles**, soit des utilitaires transverses :
 
 ### Cycle d'audit d'une attaque
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│  1. SÉLECTION DE L'ATTAQUE                                     │
-│     catalogue_attaques.py → AttaqueCatalogue (immutable)       │
-│     Détermine : commande, EventIDs attendus, FP connus         │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  2. EXÉCUTION (WinRM)                                          │
-│     orchestrateur.executer_commande_winrm()                    │
-│     - Authentification NTLM via coffre-fort                    │
-│     - Commande enveloppée (Try/Catch, $ErrorActionPreference)  │
-│     - Timeout 30s, retry sur 3 tentatives                      │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  3. ATTENTE D'INDEXATION (Elastic)                              │
-│     attente_indexation.attendre_indexation()                   │
-│     - Polling adaptatif (3s → 15s)                             │
-│     - Fenêtre glissante 5 min                                 │
-│     - Timeout 180s par défaut                                  │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-                          ▼
-              ┌───────────────────────┐
-              │   Log trouvé ?        │
-              └───────┬───────────────┘
-                  OUI │ │ NON
-                      │ └──→ ANGLE MORT (collecte à corriger)
-                      ▼
-┌────────────────────────────────────────────────────────────────┐
-│  4. ANONYMISATION (RGPD)                                       │
-│     anonymisation.anonymiser_log_elastic()                     │
-│     - Hachage déterministe des PII                             │
-│     - Préservation EventID, timestamp, level                   │
-│     - Conforme minimisation RGPD                               │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  5. GÉNÉRATION RÈGLE SIGMA                                     │
-│     orchestrateur.generer_regle_sigma_depuis_attaque()         │
-│     - Dérivation déterministe (pas de LLM)                     │
-│     - Tags MITRE ATT&CK, level, FP connus                      │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  6. COMPILATION (Sigma → Lucene)                               │
-│     compilation_sigma.compiler_sigma_vers_lucene()             │
-│     - Appel subprocess sigma CLI                              │
-│     - Pipeline ecs_windows                                    │
-│     - Gestion erreur → None si échec                           │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  7. DOUBLE VALIDATION TP/FP                                    │
-│     compilation_sigma.double_validation_tp_fp()                │
-│     - TP : ≥1 hit sur fenêtre 10 min                          │
-│     - FP : ≤50 hits sur fenêtre 7 jours                       │
-│     - Rejet si l'un des deux échoue                            │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-              ┌───────────────────────┐
-              │  Validation OK ?       │
-              └───────┬───────────────┘
-                  OUI │ │ NON
-                      │ └──→ REJET (règle non déployée)
-                      ▼
-┌────────────────────────────────────────────────────────────────┐
-│  8. DÉPLOIEMENT KIBANA                                         │
-│     orchestrateur.deployer_kibana()                            │
-│     - POST /api/detection_engine/rules                         │
-│     - Règle activée immédiatement                              │
-│     - Tags CADRE + technique MITRE                             │
-└─────────────────────────┬──────────────────────────────────────┘
-                          ▼
-┌────────────────────────────────────────────────────────────────┐
-│  9. RAPPORTS                                                   │
-│     rapport.generer_rapport_cycle() + generer_csv()            │
-│     - Markdown lisible                                         │
-│     - CSV pour Excel                                           │
-│     - Logs JSON pour forensic                                  │
-└────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    S1["1. Sélection de l'attaque<br>catalogue_attaques.py → AttaqueCatalogue (immutable)<br>Détermine : commande, EventIDs attendus, FP connus"]
+    S2["2. Exécution (WinRM)<br>orchestrateur.executer_commande_winrm()<br>Authentification NTLM via coffre-fort<br>Commande enveloppée (Try/Catch) · timeout 30s, 3 tentatives"]
+    S3["3. Attente d'indexation (Elastic)<br>attente_indexation.attendre_indexation()<br>Polling adaptatif 3s→15s · fenêtre glissante 5 min · timeout 180s"]
+    D1{"Log trouvé ?"}
+    ANGLE["ANGLE MORT<br>(collecte à corriger)"]
+    S4["4. Anonymisation (RGPD)<br>anonymisation.anonymiser_log_elastic()<br>Hachage déterministe des PII<br>Préserve EventID, timestamp, level"]
+    S5["5. Génération règle Sigma<br>orchestrateur.generer_regle_sigma_depuis_attaque()<br>Dérivation déterministe (pas de LLM)<br>Tags MITRE ATT&CK, level, FP connus"]
+    S6["6. Compilation (Sigma → Lucene)<br>compilation_sigma.compiler_sigma_vers_lucene()<br>Subprocess sigma CLI · pipeline ecs_windows"]
+    S7["7. Double validation TP/FP<br>compilation_sigma.double_validation_tp_fp()<br>TP : ≥1 hit / 10 min · FP : ≤50 hits / 7 jours"]
+    D2{"Validation OK ?"}
+    REJET["REJET<br>(règle non déployée)"]
+    S8["8. Déploiement Kibana<br>orchestrateur.deployer_kibana()<br>POST /api/detection_engine/rules<br>Règle activée immédiatement"]
+    S9["9. Rapports<br>rapport.generer_rapport_cycle() + generer_csv()<br>Markdown · CSV · logs JSON forensic"]
+
+    S1 --> S2 --> S3 --> D1
+    D1 -->|Oui| S4
+    D1 -->|Non| ANGLE
+    S4 --> S5 --> S6 --> S7 --> D2
+    D2 -->|Oui| S8
+    D2 -->|Non| REJET
+    S8 --> S9
 ```
 
 ---

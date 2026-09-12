@@ -46,65 +46,38 @@ CADRE est analysé selon la méthode **STRIDE** :
 
 ### Limites de confiance (Trust boundaries)
 
-```
-┌─────────────────────────────────────────┐
-│   Zone Opérateur (Poste de travail)     │ ← A1, A2
-└────────────────────┬────────────────────┘
-                     │
-        ┌────────────▼────────────┐
-        │   Orchestrateur CADRE   │ ← A4, A5
-        └────────────┬────────────┘
-                     │ WinRM (5985)
-        ┌────────────▼────────────┐
-        │      VM Cible           │ ← A3
-        └─────────────────────────┘
+```mermaid
+flowchart TB
+    OP["Zone Opérateur (Poste de travail)<br>← A1, A2"]
+    ORCH["Orchestrateur CADRE<br>← A4, A5"]
+    VM["VM Cible<br>← A3"]
+    OP --> ORCH -->|"WinRM · 5985"| VM
 ```
 
 ---
 
 ## 3. Diagramme de flux de données (DFD)
 
-```
-                      ┌──────────────────┐
-                      │   Opérateur SOC  │
-                      └────────┬─────────┘
-                               │ 1. Lance cycle
-                               ▼
-┌──────────────────┐   2. Commande   ┌──────────────────┐
-│   Catalogue      │───────────────→│  Orchestrateur   │
-│   (immutable)    │                │  CADRE           │
-└──────────────────┘                └────────┬─────────┘
-                                             │ 3. WinRM
-                                             ▼
-                                    ┌──────────────────┐
-                                    │    VM Cible      │
-                                    │  (Sysmon+Logs)   │
-                                    └────────┬─────────┘
-                                             │ 4. Winlogbeat
-                                             ▼
-                                    ┌──────────────────┐
-                                    │  Elasticsearch   │
-                                    └────────┬─────────┘
-                                             │ 5. Query
-                                             ▼
-                                    ┌──────────────────┐
-                                    │  Anonymisation   │
-                                    └────────┬─────────┘
-                                             │ 6. Sigma
-                                             ▼
-                                    ┌──────────────────┐
-                                    │  Validation TP/FP│
-                                    └────────┬─────────┘
-                                             │ 7. POST
-                                             ▼
-                                    ┌──────────────────┐
-                                    │     Kibana       │
-                                    └────────┬─────────┘
-                                             │ 8. Déploiement
-                                             ▼
-                                    ┌──────────────────┐
-                                    │   Rapport MD/CSV │
-                                    └──────────────────┘
+```mermaid
+flowchart TD
+    OP["Opérateur SOC"]
+    CAT["Catalogue<br>(immutable)"]
+    ORCH["Orchestrateur CADRE"]
+    VM["VM Cible<br>(Sysmon + Logs)"]
+    ES["Elasticsearch"]
+    ANO["Anonymisation"]
+    VAL["Validation TP/FP"]
+    KIB["Kibana"]
+    RAP["Rapport MD/CSV"]
+
+    OP -->|"1. Lance cycle"| ORCH
+    CAT -->|"2. Commande"| ORCH
+    ORCH -->|"3. WinRM"| VM
+    VM -->|"4. Winlogbeat"| ES
+    ES -->|"5. Query"| ANO
+    ANO -->|"6. Sigma"| VAL
+    VAL -->|"7. POST"| KIB
+    KIB -->|"8. Déploiement"| RAP
 ```
 
 ---

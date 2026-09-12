@@ -91,36 +91,33 @@ Les organisations font face à **trois défis critiques** dans la gestion de leu
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Hôte Windows / Linux                                       │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  Docker Compose                                       │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │ │
-│  │  │ Elasticsearch│←→│   Kibana     │  │   Ollama     │ │ │
-│  │  │  (index)     │  │  (alertes)   │  │  (LLM local) │ │ │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘ │ │
-│  │  ┌──────────────────────────────────────────────────┐ │ │
-│  │  │  Orchestrateur CADRE (Python)                   │ │ │
-│  │  │  • Catalogue   • Sigma   • Validation           │ │ │
-│  │  └──────────────────────────────────────────────────┘ │ │
-│  └────────────────────────────────────────────────────────┘ │
-│              │ WinRM (5985)                                  │
-│              ▼                                               │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  VM Windows 10 (Cible)                                │ │
-│  │  • Sysmon (télémétrie)                                │ │
-│  │  • Winlogbeat (collecte)                              │ │
-│  │  • Firewall + Defender désactivés (par design)        │ │
-│  └────────────────────────────────────────────────────────┘ │
-│              │ SSH (22)                                      │
-│              ▼                                               │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  VM Linux (Cible)                                     │ │
-│  │  • auditd (télémétrie, module kernel)                 │ │
-│  │  • Auditbeat (collecte)                               │ │
-│  └────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph HOTE["Hôte Windows / Linux"]
+        subgraph COMPOSE["Docker Compose"]
+            direction LR
+            ES["Elasticsearch<br>(index)"]
+            KIB["Kibana<br>(alertes)"]
+            OLL["Ollama<br>(LLM local)"]
+            ES <--> KIB
+        end
+        ORCH["Orchestrateur CADRE — Python<br>Catalogue · Sigma · Validation"]
+        COMPOSE --- ORCH
+    end
+
+    ORCH -->|"WinRM · 5985"| WIN
+    ORCH -->|"SSH · 22"| LIN
+
+    subgraph WIN["VM Windows 10 (Cible)"]
+        SYS["Sysmon — télémétrie"]
+        WLB["Winlogbeat — collecte"]
+        FW["Firewall + Defender désactivés (par design)"]
+    end
+
+    subgraph LIN["VM Linux (Cible)"]
+        AUD["auditd — télémétrie (module kernel)"]
+        ABT["Auditbeat — collecte"]
+    end
 ```
 
 ---
