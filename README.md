@@ -89,6 +89,67 @@ Les organisations font face à **trois défis critiques** dans la gestion de leu
 
 ---
 
+## Comment ça marche — vue d'ensemble du pipeline
+
+```mermaid
+flowchart TB
+    subgraph SOURCES["Sources d'attaques"]
+        direction LR
+        CAT["Catalogue déterministe<br>68 attaques · 12 tactiques MITRE ATT&CK"]
+        ATOMIC["Atomic Red Team<br>(~1600 tests, filtrés)"]
+        IA["Découverte IA<br>cadre decouvrir"]
+        SCEN["Scénarios / kill chains<br>cadre scenario"]
+    end
+
+    SOURCES --> EXEC
+
+    subgraph EXEC["Émulation sécurisée"]
+        direction LR
+        WINRM["WinRM → cible Windows"]
+        SSH["SSH → cible Linux"]
+    end
+
+    EXEC --> TELEM
+
+    subgraph TELEM["Collecte de télémétrie"]
+        direction LR
+        SYSMON["Sysmon / Winlogbeat"]
+        AUDITD["auditd / Auditbeat"]
+        ES[("Elasticsearch")]
+        SYSMON --> ES
+        AUDITD --> ES
+    end
+
+    TELEM --> ANON["Anonymisation RGPD<br>hachage déterministe des PII"]
+    ANON --> SIGMA["Génération de règle Sigma<br>déterministe (défaut) ou LLM (opt-in)"]
+    SIGMA --> VALID{"Double validation<br>TP / FP"}
+
+    VALID -->|Validé| DEPLOY["Déploiement Kibana<br>+ règle EQL de séquence (kill chain)"]
+    VALID -->|Rejeté| REJET["Rejeté<br>(non déployé)"]
+    VALID -->|Angle mort| ANGLE["Angle mort<br>(collecte à corriger)"]
+
+    DEPLOY --> RESTIT
+    REJET --> RESTIT
+    ANGLE --> RESTIT
+
+    subgraph RESTIT["Restitution"]
+        direction LR
+        RAP["Rapports MD / CSV / HTML / PDF"]
+        NAV["Export MITRE Navigator"]
+        DASH["Dashboard web<br>cadre dashboard"]
+    end
+
+    RESTIT --> LOOP["cadre loop / daemon<br>cycle continu + détection de dérive"]
+    LOOP -.->|reprend| SOURCES
+```
+
+*Chaque attaque suit ce chemin individuellement ; `cadre loop`/`cadre daemon`
+le répète en continu sur le catalogue, avec `cadre derive` qui compare
+chaque nouvelle validation à l'historique pour repérer une règle déployée
+qui se dégrade.*
+
+---
+
 ## Architecture
 
 ```mermaid
