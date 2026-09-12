@@ -2,21 +2,9 @@
 
 <div align="center">
 
-```
-+---------------------------------------------+
-|                                             |
-|         ###   ###  ####  ####  #####        |
-|        #   # #   # #   # #   # #            |
-|        #     #   # #   # #   # #            |
-|        #     ##### #   # ####  ####         |
-|        #     #   # #   # #  #  #            |
-|        #   # #   # #   # #   # #            |
-|         ###  #   # ####  #   # #####        |
-|                                             |
-| Audit SOC automatisé · MITRE ATT&CK · Sigma |
-|                                             |
-+---------------------------------------------+
-```
+<img src="dashboard/assets/logo.svg" alt="Logo CADRE" width="96" height="96">
+
+### Audit SOC automatisé · MITRE ATT&CK · Sigma
 
 **CADRE automatise l'audit de votre SOC en émulant des techniques MITRE ATT&CK
 de manière sûre, en collectant la télémétrie, et en générant, validant et

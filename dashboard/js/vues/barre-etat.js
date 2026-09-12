@@ -19,8 +19,9 @@ export function creerBarreEtat() {
   const zone = el("div", { class: "barre-services" });
   const element = el("div", { class: "barre-etat", attrs: { role: "status", "aria-live": "polite" } }, [
     el("div", { class: "barre-marque" }, [
-      // Emplacement logo : rempli par assets/logo-... si présent (voir app.js).
-      el("span", { class: "logo-slot" }, [el("span", { class: "logo-repli", text: "CADRE" })]),
+      el("span", { class: "logo-slot" }, [
+        el("img", { class: "logo-cadre", attrs: { src: "/assets/logo.svg", alt: "", width: 34, height: 34 } }),
+      ]),
       el("div", { class: "marque-txt" }, [
         el("span", { class: "marque-nom", text: "CADRE" }),
         el("span", { class: "marque-auteur", text: "Continuous Adversary-Driven Rule Engineering" }),
