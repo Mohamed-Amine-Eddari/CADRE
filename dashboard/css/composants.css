@@ -36,11 +36,10 @@
   align-items: center;
   flex: none;
 }
-.logo-repli {
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.14em;
-  color: var(--ink);
-  font-size: 1.05rem;
+.logo-cadre {
+  display: block;
+  height: 34px;
+  width: 34px;
 }
 /* Séparateur vertical entre le logo et le produit CADRE. */
 .marque-txt {

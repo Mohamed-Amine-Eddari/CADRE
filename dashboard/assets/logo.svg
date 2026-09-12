@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CADRE">
+  <defs>
+    <linearGradient id="cadre-shield" x1="4" y1="4" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1CFFE0"/>
+      <stop offset="0.5" stop-color="#00B39C"/>
+      <stop offset="1" stop-color="#003530"/>
+    </linearGradient>
+    <linearGradient id="cadre-gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="cadre-shadow-in" cx="0.5" cy="1" r="0.75">
+      <stop offset="0" stop-color="#001a17" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#001a17" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="cadre-clip">
+      <path d="M16,12 L48,12 L48,32 Q46,47 32,58 Q18,47 16,32 Z"/>
+    </clipPath>
+    <filter id="cadre-drop" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="cadre-check-shadow" x="-80%" y="-80%" width="260%" height="260%">
+      <feDropShadow dx="0" dy="1" stdDeviation="0.7" flood-color="#00201b" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <g filter="url(#cadre-drop)">
+    <path d="M16,12 L48,12 L48,32 Q46,47 32,58 Q18,47 16,32 Z" fill="url(#cadre-shield)" stroke="#00241f" stroke-width="1.4"/>
+    <line x1="17.3" y1="12.8" x2="46.7" y2="12.8" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.3" stroke-linecap="round"/>
+    <g clip-path="url(#cadre-clip)">
+      <ellipse cx="46" cy="60" rx="30" ry="20" fill="url(#cadre-shadow-in)"/>
+      <ellipse cx="24" cy="14" rx="28" ry="14" fill="url(#cadre-gloss)"/>
+    </g>
+    <path d="M19.5,15 L44.5,15 L44.5,30.5 Q42.8,42.5 32,52 Q21.2,42.5 19.5,30.5 Z" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1"/>
+    <circle cx="19.5" cy="15" r="0.9" fill="#ffffff" fill-opacity="0.5"/>
+    <circle cx="44.5" cy="15" r="0.9" fill="#ffffff" fill-opacity="0.5"/>
+    <line x1="32" y1="14.5" x2="32" y2="27" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M25,29 L30.5,35 L41,21.5" fill="none" stroke="#ffffff" stroke-width="4.1" stroke-linecap="round" stroke-linejoin="round" filter="url(#cadre-check-shadow)"/>
+  </g>
+</svg>

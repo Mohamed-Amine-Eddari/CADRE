@@ -63,6 +63,12 @@
   border-radius: var(--r);
 }
 
+.connexion-logo-img {
+  display: block;
+  height: 56px;
+  width: 56px;
+}
+
 .connexion-titre {
   margin: var(--sp-2) 0 0;
   font-size: var(--fs-display);

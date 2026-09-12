@@ -1579,6 +1579,7 @@ _CHEMINS_PUBLICS_SANS_AUTH = frozenset(
         "/css/composants.css",
         "/css/connexion.css",
         "/js/connexion.js",
+        "/assets/logo.svg",
     }
 )
 
