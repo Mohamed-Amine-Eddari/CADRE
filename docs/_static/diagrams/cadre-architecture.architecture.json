@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Architecture CADRE",
+    "output": "cadre-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "cycle-audit", "label": "Cycle d'audit", "focus": ["orchestrateur", "win_vm", "linux_vm", "elasticsearch"], "note": "L'orchestrateur exécute l'attaque sur la cible, collecte la télémétrie, puis valide et déploie la règle." },
+      { "id": "assistance-ia", "label": "Assistance IA (opt-in)", "focus": ["orchestrateur", "ollama"], "note": "Ollama n'intervient jamais dans le chemin de génération/validation/déploiement, qui reste déterministe." }
+    ]
+  },
+  "components": [
+    { "id": "operateur", "type": "external", "label": "Opérateur SOC", "sublabel": "CLI / Dashboard", "pos": [40, 300], "size": [130, 64] },
+    { "id": "orchestrateur", "type": "backend", "label": "Orchestrateur CADRE", "sublabel": "Python 3.13", "pos": [290, 300], "size": [150, 64], "tag": "24 modules" },
+    { "id": "elasticsearch", "type": "database", "label": "Elasticsearch", "sublabel": "index :9200", "pos": [610, 90], "size": [140, 60] },
+    { "id": "kibana", "type": "frontend", "label": "Kibana", "sublabel": "alertes :5601", "pos": [610, 302], "size": [140, 60] },
+    { "id": "ollama", "type": "backend", "label": "Ollama", "sublabel": "LLM local :11434", "pos": [610, 514], "size": [140, 60] },
+    { "id": "win_vm", "type": "backend", "label": "VM Windows 10", "sublabel": "Cible", "pos": [900, 88], "size": [150, 64], "tag": "WinRM" },
+    { "id": "linux_vm", "type": "backend", "label": "VM Linux / Kali", "sublabel": "Cible", "pos": [900, 512], "size": [150, 64], "tag": "SSH" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Hôte — Docker Compose", "wraps": ["orchestrateur", "elasticsearch", "kibana", "ollama"] },
+    { "kind": "security-group", "label": "Réseau Host-Only 192.168.56.0/24", "wraps": ["win_vm", "linux_vm"] }
+  ],
+  "connections": [
+    { "id": "operateur-cycle", "from": "operateur", "to": "orchestrateur", "label": "cadre cycle", "variant": "emphasis" },
+    { "id": "orch-es-index", "from": "orchestrateur", "to": "elasticsearch", "label": "index / query", "fromSide": "right", "toSide": "left", "via": [[588, 332], [588, 120]] },
+    { "id": "orch-kibana-deploy", "from": "orchestrateur", "to": "kibana", "label": "déploiement règle", "fromSide": "right", "toSide": "left" },
+    { "id": "orch-ollama", "from": "orchestrateur", "to": "ollama", "label": "assistance (opt-in)", "variant": "dashed", "fromSide": "right", "toSide": "left", "via": [[598, 332], [598, 544]] },
+    { "id": "orch-winrm", "from": "orchestrateur", "to": "win_vm", "label": "WinRM :5985", "variant": "emphasis", "fromSide": "top", "toSide": "top", "via": [[365, 20], [975, 20]] },
+    { "id": "orch-ssh", "from": "orchestrateur", "to": "linux_vm", "label": "SSH :22", "variant": "emphasis", "fromSide": "bottom", "toSide": "bottom", "via": [[365, 640], [975, 640]] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Télémétrie (vers Elasticsearch)", "items": ["Windows : Sysmon (config SwiftOnSecurity) + Winlogbeat", "Linux : auditd (module kernel) + Auditbeat"] },
+    { "dot": "rose", "title": "Labo, pas production", "items": ["Firewall + Defender désactivés sur la VM Windows (par design)", "Réseau Host-Only, jamais exposé à Internet"] },
+    { "dot": "emerald", "title": "Validation avant déploiement", "items": ["Double validation TP/FP obligatoire", "Anonymisation RGPD des logs avant tout traitement"] }
+  ]
+}
