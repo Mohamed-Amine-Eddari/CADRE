@@ -23,7 +23,7 @@ isort>=5.13.0
 # --- Sécurité ---
 bandit>=1.7.7
 # pip-audit remplace `safety` (déprécié, exige un compte) — gratuit, PyPA/OpenSSF
-pip-audit>=2.6.0
+pip-audit>=2.10.1
 # trivy : scanner de vulnérabilités, installé via Docker/binaire (PAS un package PyPI)
 # Voir : https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 
