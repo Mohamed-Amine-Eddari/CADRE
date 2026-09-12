@@ -701,7 +701,7 @@ standard pour un projet open-source :
 
 ```
 CADRE/
-├── README.md, LICENSE, LICENSE-SUMMARY.md, CHANGELOG.md  # présentation, licence, historique
+├── README.md, LICENSE, CHANGELOG.md             # présentation, licence, historique
 ├── CONTRIBUTING.md, CODE_OF_CONDUCT.md          # règles de contribution
 ├── pyproject.toml, requirements*.txt            # dépendances Python
 ├── Dockerfile, docker-compose.yml, Makefile     # infra
@@ -716,6 +716,7 @@ CADRE/
 ├── docs/
 │   ├── GUIDE_PROJET.md                          # CE FICHIER
 │   ├── ETAT_PROJET.md                           # état courant, limites connues
+│   ├── LICENSE-SUMMARY.md                       # résumé non-officiel de la licence
 │   ├── ARCHITECTURE.md, INSTALL.md, SECURITY.md,
 │   │   THREAT_MODEL.md, WHITE_PAPER.md          # documentation produit
 │   ├── _static/                                 # captures d'écran, assets du README

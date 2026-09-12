@@ -1,7 +1,7 @@
 # CADRE — Résumé non-officiel de la licence
 
 > Ce résumé n'a pas de valeur légale — seul le texte intégral de
-> [`LICENSE`](LICENSE) (AGPL-3.0) fait foi.
+> [`LICENSE`](../LICENSE) (AGPL-3.0) fait foi.
 
 CADRE est distribué sous **GNU Affero General Public License v3 (AGPL-3.0)**.
 
