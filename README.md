@@ -367,7 +367,9 @@ Pour ajouter une attaque au catalogue :
 
 ## Licence
 
-**AGPL-3.0** — voir [`LICENSE`](LICENSE).
+**AGPL-3.0** — voir [`LICENSE`](LICENSE) (texte intégral) et
+[`LICENSE-SUMMARY.md`](LICENSE-SUMMARY.md) (résumé non-officiel, sans
+valeur légale).
 
 CADRE peut être utilisé librement, y compris commercialement, **à condition que
 toute modification du code source soit publiée sous la même licence** (copyleft fort).

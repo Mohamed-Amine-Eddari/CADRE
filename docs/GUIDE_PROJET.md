@@ -701,23 +701,27 @@ standard pour un projet open-source :
 
 ```
 CADRE/
-├── README.md, LICENSE, CHANGELOG.md            # présentation, licence, historique
+├── README.md, LICENSE, LICENSE-SUMMARY.md, CHANGELOG.md  # présentation, licence, historique
 ├── CONTRIBUTING.md, CODE_OF_CONDUCT.md          # règles de contribution
 ├── pyproject.toml, requirements*.txt            # dépendances Python
 ├── Dockerfile, docker-compose.yml, Makefile     # infra
-├── .env.example, .gitignore, .pre-commit-config.yaml
-├── .github/                                     # CI + templates d'issues
+├── .env.example, .gitignore, .gitattributes, .pre-commit-config.yaml
+├── DEMARRER-CADRE.bat, ARRETER-CADRE.bat        # lanceurs un-clic (Windows) --
+│                                                 wrappent scripts/*.ps1 ci-dessous
+├── .github/                                     # CI, dependabot, templates d'issues/PR
 ├── src/cadre/                                   # le code (23 modules, section 5)
+├── dashboard/                                   # frontend statique du dashboard web (HTML/CSS/JS)
+├── scripts/                                     # démarrage/arrêt de l'environnement (PowerShell)
 ├── tests/                                       # 1168 tests (section 8)
 ├── docs/
 │   ├── GUIDE_PROJET.md                          # CE FICHIER
+│   ├── ETAT_PROJET.md                           # état courant, limites connues
 │   ├── ARCHITECTURE.md, INSTALL.md, SECURITY.md,
 │   │   THREAT_MODEL.md, WHITE_PAPER.md          # documentation produit
+│   ├── _static/                                 # captures d'écran, assets du README
 │   └── api/                                     # doc API (Sphinx)
-├── site/                                        # page web de présentation
 ├── rapports/                                    # sorties générées par `cadre cycle` (vide au repos, gitignored)
-├── rules_generees/                              # règles Sigma générées, conservées comme exemples
-└── logs/                                        # logs JSON (gitignored, jamais commité)
+└── rules_generees/                              # règles Sigma générées, conservées comme exemples
 ```
 
 **Ce qui a changé lors du dernier rangement** :
