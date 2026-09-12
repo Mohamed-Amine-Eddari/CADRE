@@ -35,7 +35,7 @@ sphinx-autodoc-typehints>=1.25.0
 # Requis par myst_enable_extensions += ["linkify"] (docs/conf.py) -- régression
 # (audit) : `make docs`/`sphinx-build` échouait (ModuleNotFoundError) sans lui,
 # jamais déclaré ici alors que la doc l'active depuis le début.
-linkify-it-py>=2.0.0
+linkify-it-py>=2.2.0
 
 # --- Outillage ---
 ipython>=8.18.0
