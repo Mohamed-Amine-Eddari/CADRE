@@ -29,21 +29,30 @@
     <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
       <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
     </filter>
+    <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#00C2A8" fill-opacity="0.16"/>
+    </pattern>
+    <radialGradient id="vign" cx="0.5" cy="0.15" r="0.85">
+      <stop offset="0" stop-color="#0d211d" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#0d211d" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
   <rect x="0" y="0" width="1200" height="560" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#dotgrid)"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#vign)"/>
   <rect x="0" y="0" width="1200" height="560" fill="none" stroke="#173430" stroke-width="2"/>
 
   <!-- Header: logo + title -->
-  <g transform="translate(64,40) scale(0.72)">
+  <g transform="translate(64,36) scale(0.85)" filter="url(#soft)">
     <path d="M16,12 L48,12 L48,32 Q46,47 32,58 Q18,47 16,32 Z" fill="url(#cadre-shield)" stroke="#00241f" stroke-width="1.4"/>
     <path d="M25,29 L30.5,35 L41,21.5" fill="none" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="118" y="70" fill="#eafffb" font-size="30" font-weight="700" letter-spacing="0.5">CADRE</text>
-  <text x="118" y="94" fill="#7fa89f" font-size="14">Cyber Attack &amp; Detection Rule Engine</text>
+  <text x="132" y="70" fill="#eafffb" font-size="31" font-weight="700" letter-spacing="0.5">CADRE</text>
+  <text x="132" y="95" fill="#7fa89f" font-size="16">Cyber Attack &amp; Detection Rule Engine</text>
 
-  <text x="1136" y="68" fill="#e8f7f4" font-size="17" font-weight="600" text-anchor="end">Architecture du pipeline</text>
-  <text x="1136" y="90" fill="#5f8880" font-size="12.5" text-anchor="end">Émulation MITRE ATT&amp;CK &#8594; détection SIEM automatisée</text>
+  <text x="1136" y="68" fill="#e8f7f4" font-size="18" font-weight="600" text-anchor="end">Architecture du pipeline</text>
+  <text x="1136" y="91" fill="#5f8880" font-size="13.5" text-anchor="end">Émulation MITRE ATT&amp;CK &#8594; détection SIEM automatisée</text>
 
   <line x1="64" y1="112" x2="1136" y2="112" stroke="#173430" stroke-width="1.5"/>
 
@@ -56,10 +65,10 @@
     <circle cx="75" cy="46" r="4" fill="#00C2A8"/>
     <circle cx="75" cy="46" r="12" fill="none" stroke="#00C2A8" stroke-width="1.6" stroke-opacity="0.75"/>
     <circle cx="75" cy="46" r="19" fill="none" stroke="#00C2A8" stroke-width="1.2" stroke-opacity="0.4"/>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Scénarios</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">ATT&amp;CK</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">Orchestrateur CLI</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">Atomic Red Team</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Scénarios</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">ATT&amp;CK</text>
+    <text x="75" y="145" text-anchor="middle" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace">T1110 &#183; T1059 &#183; T1003</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">Atomic Red Team</text>
   </g>
 
   <line x1="212" y1="240" x2="242" y2="240" stroke="url(#accentline)" stroke-width="3" marker-end="url(#arrow)"/>
@@ -73,10 +82,10 @@
       <circle cx="8" cy="8" r="1.8" fill="#00C2A8" stroke="none"/>
       <circle cx="8" cy="28" r="1.8" fill="#00C2A8" stroke="none"/>
     </g>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Cibles</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Windows / Linux</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">WinRM &#183; SSH</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">Sysmon actif</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Cibles</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Windows / Linux</text>
+    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="13">WinRM &#183; SSH</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">Sysmon actif</text>
   </g>
 
   <line x1="396" y1="240" x2="426" y2="240" stroke="url(#accentline)" stroke-width="3" marker-end="url(#arrow)"/>
@@ -85,10 +94,10 @@
   <g transform="translate(428,150)">
     <rect width="150" height="180" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
     <polyline points="48,50 58,50 64,32 72,62 78,42 84,50 102,50" fill="none" stroke="#00C2A8" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Télémétrie</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">SIEM</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">Winlogbeat &#183; Auditbeat</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">Elasticsearch</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Télémétrie</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">SIEM</text>
+    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="13">Winlogbeat &#183; Auditbeat</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">Elasticsearch</text>
   </g>
 
   <line x1="580" y1="240" x2="610" y2="240" stroke="url(#accentline)" stroke-width="3" marker-end="url(#arrow)"/>
@@ -98,10 +107,10 @@
     <rect width="150" height="180" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
     <path d="M60,24 L90,24 L90,44 Q88,58 75,66 Q62,58 60,44 Z" fill="none" stroke="#00C2A8" stroke-width="2.2"/>
     <path d="M68,44 L73,50 L82,36" fill="none" stroke="#00C2A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Règles Sigma</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="12" font-weight="600">générées</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">PySigma</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">Assisté par IA</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Règles Sigma</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="13" font-weight="600">générées</text>
+    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="13">PySigma</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">Assisté par IA</text>
   </g>
 
   <line x1="764" y1="240" x2="794" y2="240" stroke="url(#accentline)" stroke-width="3" marker-end="url(#arrow)"/>
@@ -111,10 +120,10 @@
     <rect width="150" height="180" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
     <circle cx="75" cy="46" r="26" fill="#0a1f1b" stroke="#00C2A8" stroke-width="2"/>
     <path d="M63,46 L72,55 L89,35" fill="none" stroke="#00C2A8" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Double</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">validation</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">Test positif</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">Test faux-positif</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Double</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">validation</text>
+    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="13">Test positif</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">Test faux-positif</text>
   </g>
 
   <line x1="948" y1="240" x2="978" y2="240" stroke="url(#accentline)" stroke-width="3" marker-end="url(#arrow)"/>
@@ -124,37 +133,37 @@
     <rect width="150" height="180" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
     <path d="M52,52 Q48,38 62,36 Q66,24 80,26 Q94,24 96,38 Q106,40 104,52 Z" fill="none" stroke="#00C2A8" stroke-width="2.2" stroke-linejoin="round"/>
     <path d="M75,40 L75,58 M67,50 L75,42 L83,50" fill="none" stroke="#00C2A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Déploiement</text>
-    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="15" font-weight="700">Kibana</text>
-    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="11.5">Règle active</text>
-    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="11.5">en production</text>
+    <text x="75" y="98" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Déploiement</text>
+    <text x="75" y="118" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Kibana</text>
+    <text x="75" y="145" text-anchor="middle" fill="#7fa89f" font-size="13">Règle active</text>
+    <text x="75" y="161" text-anchor="middle" fill="#7fa89f" font-size="13">en production</text>
   </g>
 
   <!-- footer stats -->
   <line x1="64" y1="364" x2="1136" y2="364" stroke="#173430" stroke-width="1.5"/>
 
   <g transform="translate(64,402)">
-    <text x="0" y="0" fill="#eafffb" font-size="26" font-weight="700">1168</text>
-    <text x="0" y="20" fill="#7fa89f" font-size="12">tests automatisés</text>
+    <text x="0" y="0" fill="#eafffb" font-size="29" font-weight="700">1168</text>
+    <text x="0" y="21" fill="#7fa89f" font-size="13.5">tests automatisés</text>
   </g>
   <g transform="translate(280,402)">
-    <text x="0" y="0" fill="#eafffb" font-size="26" font-weight="700">93,6%</text>
-    <text x="0" y="20" fill="#7fa89f" font-size="12">couverture de code</text>
+    <text x="0" y="0" fill="#eafffb" font-size="29" font-weight="700">93,6%</text>
+    <text x="0" y="21" fill="#7fa89f" font-size="13.5">couverture de code</text>
   </g>
   <g transform="translate(500,402)">
-    <text x="0" y="0" fill="#eafffb" font-size="26" font-weight="700">24</text>
-    <text x="0" y="20" fill="#7fa89f" font-size="12">modules Python</text>
+    <text x="0" y="0" fill="#eafffb" font-size="29" font-weight="700">70 / 70</text>
+    <text x="0" y="21" fill="#7fa89f" font-size="13.5">attaques validées</text>
   </g>
-  <g transform="translate(700,402)">
-    <text x="0" y="0" fill="#eafffb" font-size="26" font-weight="700">2 OS</text>
-    <text x="0" y="20" fill="#7fa89f" font-size="12">Windows &amp; Linux</text>
+  <g transform="translate(730,402)">
+    <text x="0" y="0" fill="#eafffb" font-size="29" font-weight="700">2 OS</text>
+    <text x="0" y="21" fill="#7fa89f" font-size="13.5">Windows &amp; Linux</text>
   </g>
-  <g transform="translate(900,402)">
-    <text x="0" y="0" fill="#eafffb" font-size="26" font-weight="700">AGPL-3.0</text>
-    <text x="0" y="20" fill="#7fa89f" font-size="12">licence open-source</text>
+  <g transform="translate(920,402)">
+    <text x="0" y="0" fill="#eafffb" font-size="29" font-weight="700">AGPL-3.0</text>
+    <text x="0" y="21" fill="#7fa89f" font-size="13.5">licence open-source</text>
   </g>
 
-  <text x="600" y="452" text-anchor="middle" fill="#4d716a" font-size="12.5">Projet de fin d'études (PFA) — cybersécurité — github.com/Mohamed-Amine-Eddari/CADRE</text>
+  <text x="600" y="452" text-anchor="middle" fill="#4d716a" font-size="14">Projet de fin d'études (PFA) — cybersécurité — github.com/Mohamed-Amine-Eddari/CADRE</text>
 
   <rect x="64" y="540" width="1072" height="3" rx="1.5" fill="url(#bottombar)"/>
 </svg>

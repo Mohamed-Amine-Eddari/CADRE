@@ -6,7 +6,42 @@
 > `CHANGELOG.md` (long, chronologique) — l'état courant, ce qui est
 > vérifié, ce qui est bloqué, et par où continuer.
 >
-> **Dernière mise à jour** : 2026-09-11.
+> **Dernière mise à jour** : 2026-09-13.
+
+## 0. Mise à jour du 12-13/09 — passage en dépôt public
+
+Depuis la rédaction initiale de ce document (11/09), le dépôt a été
+préparé pour être rendu public :
+
+- **Identité Orange Cyberdefense retirée** du code (dashboard, PDF
+  générés, commentaires) — le stage reste mentionné en toutes lettres
+  dans le README et le rapport PFA, mais plus aucune couleur/logo de
+  l'entreprise n'est intégré au produit livré. Nouvel accent visuel
+  cyan/teal (`#00C2A8`).
+- **Historique Git réécrit à deux reprises supplémentaires** (en plus de
+  la purge du 11/09 déjà documentée en §3.2) :
+  1. `git checkout --orphan` : historique repassé à un seul commit propre
+     pour la mise en public (aucune trace des ~66 commits de développement
+     ni des artefacts de process — sauvegarde complète conservée en
+     privé, hors GitHub).
+  2. `git filter-repo --message-callback` (×2 passes) : suppression de la
+     ligne `Co-Authored-By: Claude ...` de tous les messages de commit
+     (exigence de transparence de l'assistant IA utilisé pendant le
+     développement — cf. `CHANGELOG.md` si le contexte complet est utile).
+  **Conséquence pour quiconque a un clone local antérieur au 13/09** :
+  les hash de commit ont changé à chaque réécriture. Un clone existant
+  doit être resynchronisé avec `git fetch origin && git reset --hard
+  origin/main` — un `git pull` normal échouera (historiques divergents).
+- **`LICENSE` corrigé** : le fichier contenait un texte hybride
+  (mélange GPL-3.0 / AGPL-3.0, probablement introduit lors d'une
+  génération assistée par IA plus tôt dans le projet), ce qui empêchait
+  GitHub de reconnaître la licence (affichait « Other »). Remplacé par
+  le texte officiel AGPL-3.0 verbatim (`https://www.gnu.org/licenses/agpl-3.0.txt`),
+  seule la ligne de copyright de la section « How to Apply » reste
+  personnalisée — comme prévu par le gabarit officiel lui-même.
+- **Nouveaux diagrammes** ajoutés dans `docs/_static/diagrams/`
+  (architecture pipeline, étapes de fonctionnement, topologie système)
+  pour le README et la communication externe (LinkedIn).
 
 ## 1. État vérifié à cette date
 
@@ -138,3 +173,7 @@ d'extension cohérentes avec l'architecture existante :
 - Étendre le catalogue à d'autres tactiques MITRE ATT&CK non encore
   couvertes, ou à d'autres OS (macOS).
 - Suivre `diskcache` (§ 3.3) jusqu'à publication d'un correctif.
+- Marquer un point de repère net pour la reprise (tag Git `v1.0.0` +
+  Release GitHub) une fois le dépôt effectivement public — utile pour
+  qu'un successeur sache exactement quel état correspond à la
+  soutenance/fin de stage, indépendamment des commits ultérieurs.

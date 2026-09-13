@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a1614"/>
+      <stop offset="1" stop-color="#071110"/>
+    </linearGradient>
+    <linearGradient id="cadre-shield" x1="4" y1="4" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1CFFE0"/>
+      <stop offset="0.5" stop-color="#00B39C"/>
+      <stop offset="1" stop-color="#003530"/>
+    </linearGradient>
+    <linearGradient id="boxfill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#132824"/>
+      <stop offset="1" stop-color="#0d1f1c"/>
+    </linearGradient>
+    <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#00C2A8" fill-opacity="0.14"/>
+    </pattern>
+    <radialGradient id="vign" cx="0.5" cy="0.1" r="0.9">
+      <stop offset="0" stop-color="#0d211d" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#0d211d" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#00C2A8"/>
+    </marker>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="800" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="800" fill="url(#dotgrid)"/>
+  <rect x="0" y="0" width="1200" height="800" fill="url(#vign)"/>
+  <rect x="0" y="0" width="1200" height="800" fill="none" stroke="#173430" stroke-width="2"/>
+
+  <!-- Header -->
+  <g transform="translate(64,36) scale(0.85)" filter="url(#soft)">
+    <path d="M16,12 L48,12 L48,32 Q46,47 32,58 Q18,47 16,32 Z" fill="url(#cadre-shield)" stroke="#00241f" stroke-width="1.4"/>
+    <path d="M25,29 L30.5,35 L41,21.5" fill="none" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="132" y="70" fill="#eafffb" font-size="31" font-weight="700" letter-spacing="0.5">CADRE</text>
+  <text x="132" y="95" fill="#7fa89f" font-size="16">Cyber Attack &amp; Detection Rule Engine</text>
+
+  <text x="1136" y="68" fill="#e8f7f4" font-size="18" font-weight="600" text-anchor="end">Architecture système</text>
+  <text x="1136" y="91" fill="#5f8880" font-size="13.5" text-anchor="end">Composants, limites de confiance et flux de données</text>
+
+  <line x1="64" y1="112" x2="1136" y2="112" stroke="#173430" stroke-width="1.5"/>
+
+  <!-- ===== Connectors (drawn first, under the boxes) ===== -->
+  <!-- Orchestrateur -> VM Windows (elbow) -->
+  <path d="M540,250 V300 H320 V330" fill="none" stroke="#00C2A8" stroke-width="2"/>
+  <!-- Orchestrateur -> VM Linux (elbow) -->
+  <path d="M660,250 V300 H880 V330" fill="none" stroke="#00C2A8" stroke-width="2"/>
+  <circle cx="540" cy="250" r="3" fill="#00C2A8"/>
+  <circle cx="660" cy="250" r="3" fill="#00C2A8"/>
+  <path d="M320,300 V330" fill="none" stroke="#00C2A8" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M880,300 V330" fill="none" stroke="#00C2A8" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="410" y="292" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace">WinRM</text>
+  <text x="700" y="292" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace">SSH</text>
+
+  <!-- VM Windows -> Elasticsearch (elbow) -->
+  <path d="M320,440 V500 H480" fill="none" stroke="#00C2A8" stroke-width="2"/>
+  <!-- VM Linux -> Elasticsearch (elbow) -->
+  <path d="M880,440 V500 H600" fill="none" stroke="#00C2A8" stroke-width="2"/>
+  <path d="M480,500 V558" fill="none" stroke="#00C2A8" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M600,500 V558" fill="none" stroke="#00C2A8" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="330" y="492" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace">Winlogbeat</text>
+  <text x="610" y="492" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace">Auditbeat</text>
+
+  <!-- Elasticsearch -> Kibana -->
+  <path d="M680,615 H716" fill="none" stroke="#00C2A8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Orchestrateur -> Kibana (deploiement), route exterieure a droite -->
+  <path d="M720,195 H1120 V615 H924" fill="none" stroke="#00C2A8" stroke-width="2" stroke-dasharray="1,6" stroke-linecap="round" marker-end="url(#arrow)"/>
+  <text x="1130" y="405" fill="#4dd9c4" font-size="12.5" font-family="Consolas, monospace" transform="rotate(90 1130 405)">Dépôt de la règle Sigma validée</text>
+
+  <!-- ===== Boundaries ===== -->
+  <!-- labels sit in the clear gaps between node columns, so no connector ever crosses them -->
+  <rect x="150" y="308" width="900" height="150" rx="14" fill="none" stroke="#2a4a44" stroke-width="1.5" stroke-dasharray="6,5"/>
+  <text x="600" y="330" text-anchor="middle" fill="#5f8880" font-size="12" font-weight="700" letter-spacing="0.5">ENVIRONNEMENT DE TEST</text>
+
+  <rect x="370" y="538" width="580" height="150" rx="14" fill="none" stroke="#2a4a44" stroke-width="1.5" stroke-dasharray="6,5"/>
+  <text x="750" y="555" fill="#5f8880" font-size="11.5" font-weight="700" letter-spacing="0.5">STACK SIEM (ELASTIC)</text>
+
+  <!-- ===== Nodes ===== -->
+
+  <!-- Orchestrateur -->
+  <g transform="translate(480,140)">
+    <rect width="240" height="110" rx="12" fill="url(#boxfill)" stroke="#00C2A8" stroke-width="2" filter="url(#soft)"/>
+    <g transform="translate(105,18)" stroke="#00C2A8" stroke-width="1.8" fill="none">
+      <rect x="0" y="0" width="30" height="20" rx="3"/>
+      <path d="M5,6 L12,10 L5,14" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="120" y="58" text-anchor="middle" fill="#eafffb" font-size="17" font-weight="700">Orchestrateur CADRE</text>
+    <text x="120" y="82" text-anchor="middle" fill="#7fa89f" font-size="12.5">CLI Python — machine à états</text>
+    <text x="120" y="100" text-anchor="middle" fill="#7fa89f" font-size="12.5">à 9 étapes</text>
+  </g>
+
+  <!-- VM Windows -->
+  <g transform="translate(180,330)">
+    <rect width="280" height="110" rx="12" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <g transform="translate(24,26)" stroke="#00C2A8" stroke-width="2" fill="none">
+      <rect x="0" y="0" width="30" height="10" rx="2"/>
+      <rect x="0" y="13" width="30" height="10" rx="2"/>
+      <circle cx="5" cy="5" r="1.4" fill="#00C2A8" stroke="none"/>
+      <circle cx="5" cy="18" r="1.4" fill="#00C2A8" stroke="none"/>
+    </g>
+    <text x="140" y="44" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">VM Windows</text>
+    <text x="140" y="70" text-anchor="middle" fill="#7fa89f" font-size="12.5">Sysmon</text>
+    <text x="140" y="88" text-anchor="middle" fill="#7fa89f" font-size="12.5">Winlogbeat</text>
+  </g>
+
+  <!-- VM Linux -->
+  <g transform="translate(740,330)">
+    <rect width="280" height="110" rx="12" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <g transform="translate(24,26)" stroke="#00C2A8" stroke-width="2" fill="none">
+      <rect x="0" y="0" width="30" height="10" rx="2"/>
+      <rect x="0" y="13" width="30" height="10" rx="2"/>
+      <circle cx="5" cy="5" r="1.4" fill="#00C2A8" stroke="none"/>
+      <circle cx="5" cy="18" r="1.4" fill="#00C2A8" stroke="none"/>
+    </g>
+    <text x="140" y="44" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">VM Linux</text>
+    <text x="140" y="70" text-anchor="middle" fill="#7fa89f" font-size="12.5">auditd</text>
+    <text x="140" y="88" text-anchor="middle" fill="#7fa89f" font-size="12.5">Auditbeat</text>
+  </g>
+
+  <!-- Elasticsearch -->
+  <g transform="translate(400,558)">
+    <rect width="280" height="110" rx="12" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <g transform="translate(24,26)" stroke="#00C2A8" stroke-width="2" fill="none">
+      <ellipse cx="15" cy="4" rx="15" ry="4"/>
+      <path d="M0,4 V16 Q0,20 15,20 Q30,20 30,16 V4"/>
+      <path d="M0,10 Q0,14 15,14 Q30,14 30,10"/>
+    </g>
+    <text x="140" y="44" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Elasticsearch</text>
+    <text x="140" y="70" text-anchor="middle" fill="#7fa89f" font-size="12.5">Indexation télémétrie</text>
+    <text x="140" y="88" text-anchor="middle" fill="#7fa89f" font-size="12.5">et règles Sigma</text>
+  </g>
+
+  <!-- Kibana -->
+  <g transform="translate(718,558)">
+    <rect width="206" height="110" rx="12" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <g transform="translate(24,28)" stroke="#00C2A8" stroke-width="2" fill="none" stroke-linecap="round">
+      <line x1="0" y1="18" x2="0" y2="0"/>
+      <line x1="0" y1="18" x2="26" y2="18"/>
+      <polyline points="4,15 11,8 17,12 24,3" fill="none"/>
+    </g>
+    <text x="103" y="44" text-anchor="middle" fill="#eafffb" font-size="16" font-weight="700">Kibana</text>
+    <text x="103" y="70" text-anchor="middle" fill="#7fa89f" font-size="12.5">Règles de détection</text>
+    <text x="103" y="88" text-anchor="middle" fill="#7fa89f" font-size="12.5">actives</text>
+  </g>
+
+  <text x="600" y="758" text-anchor="middle" fill="#4d716a" font-size="14">Projet de fin d'études (PFA) — cybersécurité — github.com/Mohamed-Amine-Eddari/CADRE</text>
+</svg>
