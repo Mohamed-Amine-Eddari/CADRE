@@ -11,7 +11,7 @@ urllib3>=2.2.0
 python-dotenv>=1.0.0
 
 # --- Sécurité : coffre-fort et chiffrement ---
-cryptography>=50.0.0  # 50.0.0 corrige PYSEC-2026-3552 (< 50.0.0 vulnérable)
+cryptography>=50.0.1  # 50.0.0 corrige PYSEC-2026-3552 (< 50.0.0 vulnérable)
 keyring>=24.2.0
 
 # --- Exécution à distance (WinRM pour Windows, SSH pour Linux) ---
