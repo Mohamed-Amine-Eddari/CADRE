@@ -213,11 +213,15 @@ flowchart TB
 ```
 
 <p align="center">
-  <img src="docs/_static/diagrams/cadre-architecture-card.png" alt="Architecture CADRE — rendu Archify" width="90%">
+  <img src="docs/_static/diagrams/cadre-architecture-card.png" alt="Architecture du pipeline CADRE" width="90%">
 </p>
 
-Version interactive (vues nommées, thèmes clair/sombre, export) :
-[`docs/_static/diagrams/cadre-architecture.html`](docs/_static/diagrams/cadre-architecture.html)
+<p align="center">
+  <img src="docs/_static/diagrams/cadre-pipeline-card.png" alt="Comment fonctionne CADRE — 5 étapes" width="90%">
+</p>
+
+Version interactive de l'architecture (vues nommées, thèmes clair/sombre,
+export) : [`docs/_static/diagrams/cadre-architecture.html`](docs/_static/diagrams/cadre-architecture.html)
 — téléchargez-le et ouvrez-le dans un navigateur (fichier autonome, aucune
 dépendance réseau).
 

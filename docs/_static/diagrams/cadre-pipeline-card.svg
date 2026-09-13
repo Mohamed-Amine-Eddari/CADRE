@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a1614"/>
+      <stop offset="1" stop-color="#071110"/>
+    </linearGradient>
+    <linearGradient id="cadre-shield" x1="4" y1="4" x2="50" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1CFFE0"/>
+      <stop offset="0.5" stop-color="#00B39C"/>
+      <stop offset="1" stop-color="#003530"/>
+    </linearGradient>
+    <linearGradient id="boxfill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#132824"/>
+      <stop offset="1" stop-color="#0d1f1c"/>
+    </linearGradient>
+    <linearGradient id="badgefill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1CFFE0"/>
+      <stop offset="1" stop-color="#00967f"/>
+    </linearGradient>
+    <linearGradient id="accentline" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00C2A8" stop-opacity="0.15"/>
+      <stop offset="0.5" stop-color="#00C2A8" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#00C2A8" stop-opacity="0.15"/>
+    </linearGradient>
+    <linearGradient id="bottombar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00C2A8" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#00C2A8" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#00C2A8" stop-opacity="0"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#00C2A8"/>
+    </marker>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="badgeglow" x="-80%" y="-80%" width="260%" height="260%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00c2a8" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="560" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="560" fill="none" stroke="#173430" stroke-width="2"/>
+
+  <!-- Header: logo + title -->
+  <g transform="translate(64,40) scale(0.72)">
+    <path d="M16,12 L48,12 L48,32 Q46,47 32,58 Q18,47 16,32 Z" fill="url(#cadre-shield)" stroke="#00241f" stroke-width="1.4"/>
+    <path d="M25,29 L30.5,35 L41,21.5" fill="none" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="118" y="70" fill="#eafffb" font-size="30" font-weight="700" letter-spacing="0.5">CADRE</text>
+  <text x="118" y="94" fill="#7fa89f" font-size="14">Cyber Attack &amp; Detection Rule Engine</text>
+
+  <text x="1136" y="68" fill="#e8f7f4" font-size="17" font-weight="600" text-anchor="end">Comment ça marche</text>
+  <text x="1136" y="90" fill="#5f8880" font-size="12.5" text-anchor="end">D'une technique d'attaque à une règle de détection déployée</text>
+
+  <line x1="64" y1="112" x2="1136" y2="112" stroke="#173430" stroke-width="1.5"/>
+
+  <!-- connecting spine -->
+  <line x1="150" y1="190" x2="1050" y2="190" stroke="url(#accentline)" stroke-width="2.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+
+  <!-- Step boxes: width 180, height 260, top y=140, x starts 90 gap 30 -->
+
+  <!-- Step 1 -->
+  <g transform="translate(90,140)">
+    <rect width="180" height="260" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <circle cx="90" cy="50" r="28" fill="#0a1f1b" stroke="url(#badgefill)" stroke-width="2.6" filter="url(#badgeglow)"/>
+    <text x="90" y="60" text-anchor="middle" fill="#eafffb" font-size="26" font-weight="700">1</text>
+    <text x="90" y="106" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">Émulation</text>
+    <text x="90" y="126" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">d'attaque</text>
+    <text x="90" y="156" text-anchor="middle" fill="#8fb3ab" font-size="11.5">Rejoue une technique</text>
+    <text x="90" y="174" text-anchor="middle" fill="#8fb3ab" font-size="11.5">MITRE ATT&amp;CK réelle</text>
+    <text x="90" y="192" text-anchor="middle" fill="#8fb3ab" font-size="11.5">sur Windows / Linux</text>
+    <text x="90" y="230" text-anchor="middle" fill="#5f8880" font-size="11" font-weight="600">Atomic Red Team</text>
+  </g>
+
+  <!-- Step 2 -->
+  <g transform="translate(300,140)">
+    <rect width="180" height="260" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <circle cx="90" cy="50" r="28" fill="#0a1f1b" stroke="url(#badgefill)" stroke-width="2.6" filter="url(#badgeglow)"/>
+    <text x="90" y="60" text-anchor="middle" fill="#eafffb" font-size="26" font-weight="700">2</text>
+    <text x="90" y="106" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">Collecte de</text>
+    <text x="90" y="126" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">télémétrie</text>
+    <text x="90" y="156" text-anchor="middle" fill="#8fb3ab" font-size="11.5">Sysmon, Winlogbeat et</text>
+    <text x="90" y="174" text-anchor="middle" fill="#8fb3ab" font-size="11.5">Auditbeat envoient les</text>
+    <text x="90" y="192" text-anchor="middle" fill="#8fb3ab" font-size="11.5">logs au SIEM</text>
+    <text x="90" y="230" text-anchor="middle" fill="#5f8880" font-size="11" font-weight="600">Elasticsearch</text>
+  </g>
+
+  <!-- Step 3 -->
+  <g transform="translate(510,140)">
+    <rect width="180" height="260" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <circle cx="90" cy="50" r="28" fill="#0a1f1b" stroke="url(#badgefill)" stroke-width="2.6" filter="url(#badgeglow)"/>
+    <text x="90" y="60" text-anchor="middle" fill="#eafffb" font-size="26" font-weight="700">3</text>
+    <text x="90" y="106" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">Génération</text>
+    <text x="90" y="126" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">de règle</text>
+    <text x="90" y="156" text-anchor="middle" fill="#8fb3ab" font-size="11.5">CADRE propose une</text>
+    <text x="90" y="174" text-anchor="middle" fill="#8fb3ab" font-size="11.5">règle Sigma adaptée,</text>
+    <text x="90" y="192" text-anchor="middle" fill="#8fb3ab" font-size="11.5">assistée par IA</text>
+    <text x="90" y="230" text-anchor="middle" fill="#5f8880" font-size="11" font-weight="600">PySigma</text>
+  </g>
+
+  <!-- Step 4 -->
+  <g transform="translate(720,140)">
+    <rect width="180" height="260" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <circle cx="90" cy="50" r="28" fill="#0a1f1b" stroke="url(#badgefill)" stroke-width="2.6" filter="url(#badgeglow)"/>
+    <text x="90" y="60" text-anchor="middle" fill="#eafffb" font-size="26" font-weight="700">4</text>
+    <text x="90" y="106" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">Double</text>
+    <text x="90" y="126" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">validation</text>
+    <text x="90" y="156" text-anchor="middle" fill="#8fb3ab" font-size="11.5">La règle doit se</text>
+    <text x="90" y="174" text-anchor="middle" fill="#8fb3ab" font-size="11.5">déclencher (TP) et rester</text>
+    <text x="90" y="192" text-anchor="middle" fill="#8fb3ab" font-size="11.5">silencieuse sinon (FP)</text>
+    <text x="90" y="230" text-anchor="middle" fill="#5f8880" font-size="11" font-weight="600">Test automatisé</text>
+  </g>
+
+  <!-- Step 5 -->
+  <g transform="translate(930,140)">
+    <rect width="180" height="260" rx="14" fill="url(#boxfill)" stroke="#1d3a35" stroke-width="1.5" filter="url(#soft)"/>
+    <circle cx="90" cy="50" r="28" fill="#0a1f1b" stroke="url(#badgefill)" stroke-width="2.6" filter="url(#badgeglow)"/>
+    <text x="90" y="60" text-anchor="middle" fill="#eafffb" font-size="26" font-weight="700">5</text>
+    <text x="90" y="106" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">Déploiement</text>
+    <text x="90" y="126" text-anchor="middle" fill="#eafffb" font-size="15.5" font-weight="700">automatique</text>
+    <text x="90" y="156" text-anchor="middle" fill="#8fb3ab" font-size="11.5">La règle validée part</text>
+    <text x="90" y="174" text-anchor="middle" fill="#8fb3ab" font-size="11.5">en production, prête à</text>
+    <text x="90" y="192" text-anchor="middle" fill="#8fb3ab" font-size="11.5">détecter en continu</text>
+    <text x="90" y="230" text-anchor="middle" fill="#5f8880" font-size="11" font-weight="600">Kibana</text>
+  </g>
+
+  <!-- arrowheads on the spine between steps -->
+  <line x1="272" y1="190" x2="298" y2="190" stroke="#00C2A8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="482" y1="190" x2="508" y2="190" stroke="#00C2A8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="692" y1="190" x2="718" y2="190" stroke="#00C2A8" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="902" y1="190" x2="928" y2="190" stroke="#00C2A8" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <text x="600" y="452" text-anchor="middle" fill="#4d716a" font-size="12.5">Projet de fin d'études (PFA) — cybersécurité — github.com/Mohamed-Amine-Eddari/CADRE</text>
+
+  <rect x="64" y="540" width="1072" height="3" rx="1.5" fill="url(#bottombar)"/>
+</svg>
