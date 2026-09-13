@@ -21,7 +21,7 @@ paramiko>=3.4.0
 
 # --- Génération de règles Sigma ---
 pysigma>=0.11.0
-pysigma-backend-elasticsearch>=1.0.0
+pysigma-backend-elasticsearch>=2.1.1
 pyyaml>=6.0.1
 
 # --- Export PDF natif des rapports de cycle (dashboard) ---
