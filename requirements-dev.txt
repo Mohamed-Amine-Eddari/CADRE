@@ -45,4 +45,4 @@ detect-secrets>=1.5.0
 tox>=4.11.0
 
 # --- Sigma CLI (optionnel, pour compilation) ---
-sigma-cli>=0.6.0
+sigma-cli>=3.1.0

@@ -76,7 +76,7 @@ docs = [
     "myst-parser>=2.0.0",
 ]
 sigma = [
-    "sigma-cli>=0.6.0",
+    "sigma-cli>=3.1.0",
 ]
 
 [project.urls]
