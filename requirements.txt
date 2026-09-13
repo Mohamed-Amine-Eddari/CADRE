@@ -5,7 +5,7 @@
 
 # --- Core HTTP ---
 requests>=2.32.0
-urllib3>=2.2.0
+urllib3>=2.7.0
 
 # --- Configuration ---
 python-dotenv>=1.0.0
