@@ -21,7 +21,7 @@ mypy>=1.7.0
 isort>=5.13.0
 
 # --- Sécurité ---
-bandit>=1.7.7
+bandit>=1.9.4
 # pip-audit remplace `safety` (déprécié, exige un compte) — gratuit, PyPA/OpenSSF
 pip-audit>=2.6.0
 # trivy : scanner de vulnérabilités, installé via Docker/binaire (PAS un package PyPI)
