@@ -42,7 +42,7 @@ ipython>=8.18.0
 ipdb>=0.13.0
 pre-commit>=3.6.0
 detect-secrets>=1.5.0
-tox>=4.11.0
+tox>=4.61.4
 
 # --- Sigma CLI (optionnel, pour compilation) ---
 sigma-cli>=0.6.0
