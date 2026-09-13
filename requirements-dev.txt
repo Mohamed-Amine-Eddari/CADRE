@@ -39,7 +39,7 @@ linkify-it-py>=2.0.0
 
 # --- Outillage ---
 ipython>=8.18.0
-ipdb>=0.13.0
+ipdb>=0.13.13
 pre-commit>=3.6.0
 detect-secrets>=1.5.0
 tox>=4.11.0
